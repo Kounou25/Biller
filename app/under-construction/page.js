@@ -9,6 +9,7 @@ export default function UnderConstruction() {
           </p>
           <div style={styles.infoContainer}>
             <p>Créé avec ❤️ par : Kounou Gilbert</p>
+            <p>Whatsapp : +227 88715276</p>
             <p>Contact : kounougilbert288@gmail.com</p>
             <p>Localisation : Niamey, Niger</p>
           </div>
