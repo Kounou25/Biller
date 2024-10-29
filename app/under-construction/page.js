@@ -8,7 +8,7 @@ export default function UnderConstruction() {
             Cette application est actuellement en développement. Revenez bientôt pour en découvrir plus !
           </p>
           <div style={styles.infoContainer}>
-            <p>Créé par : Kounou Gnimassou Gilbert</p>
+            <p>Créé avec ❤️ par : Kounou Gilbert</p>
             <p>Contact : kounougilbert288@gmail.com</p>
             <p>Localisation : Niamey, Niger</p>
           </div>
