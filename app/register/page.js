@@ -20,7 +20,14 @@ export default function Register() {
     });
 
     const data = await response.json();
-    setMessage(data.message);
+    if (response.ok) {
+        // Redirection vers la page de connexion en cas de succès
+        window.location.href = '/login';
+      } else {
+        // Affiche le message d'erreur s'il y a une erreur
+        setMessage(data.message);
+      }
+    
   };
 
   return (
