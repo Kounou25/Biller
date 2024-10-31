@@ -24,108 +24,142 @@ export default function Register() {
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Inscription</h2>
-      <form onSubmit={handleRegister} style={styles.form}>
-        <input
-          type="text"
-          placeholder="Nom"
-          value={nom}
-          onChange={(e) => setNom(e.target.value)}
-          required
-          style={styles.input}
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={styles.input}
-        />
-        <input
-          type="text"
-          placeholder="Pays"
-          value={pays}
-          onChange={(e) => setPays(e.target.value)}
-          required
-          style={styles.input}
-        />
-        <input
-          type="tel"
-          placeholder="Téléphone"
-          value={tel}
-          onChange={(e) => setTel(e.target.value)}
-          required
-          style={styles.input}
-        />
-        <input
-          type="text"
-          placeholder="Entreprise"
-          value={company}
-          onChange={(e) => setCompany(e.target.value)}
-          required
-          style={styles.input}
-        />
-        <input
-          type="password"
-          placeholder="Mot de passe"
-          value={mbp}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={styles.input}
-        />
-        <button type="submit" style={styles.button}>S'inscrire</button>
-      </form>
-      {message && <p style={styles.message}>{message}</p>}
+    <div className="container">
+      <div className="form-wrapper">
+        <h2>Inscription</h2>
+        <form onSubmit={handleRegister} className="form">
+          <input
+            type="text"
+            placeholder="Nom"
+            value={nom}
+            onChange={(e) => setNom(e.target.value)}
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Pays"
+            value={pays}
+            onChange={(e) => setPays(e.target.value)}
+            required
+          />
+          <input
+            type="tel"
+            placeholder="Téléphone"
+            value={tel}
+            onChange={(e) => setTel(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Entreprise"
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Mot de passe"
+            value={mbp}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit">S'inscrire</button>
+        </form>
+        {message && <p className="message">{message}</p>}
+      </div>
+
+      <style jsx>{`
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        html, body {
+          height: 100%;
+          width: 100%;
+          overflow-x: hidden;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: #1e1e1e;
+        }
+
+        .container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100vh;
+        }
+
+        .form-wrapper {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 100%;
+          max-width: 400px;
+          padding: 20px;
+          background-color: #2b2b2b;
+          border-radius: 8px;
+          box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+          font-size: 24px;
+          margin-bottom: 20px;
+          color: #ffffff;
+        }
+
+        .form {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+        }
+
+        .form input {
+          background-color: #3c3c3c;
+          border: none;
+          border-radius: 5px;
+          padding: 12px;
+          margin: 8px 0;
+          color: #ffffff;
+          font-size: 16px;
+        }
+
+        .form input::placeholder {
+          color: #b0b0b0;
+        }
+
+        .form button {
+          background-color: #4a90e2;
+          color: #ffffff;
+          border: none;
+          border-radius: 5px;
+          padding: 12px;
+          font-size: 16px;
+          cursor: pointer;
+          margin-top: 10px;
+          transition: background-color 0.3s;
+        }
+
+        .form button:hover {
+          background-color: #357abd;
+        }
+
+        .message {
+          margin-top: 20px;
+          font-size: 14px;
+          color: #4a90e2;
+        }
+      `}</style>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    maxWidth: '400px',
-    margin: '0 auto',
-    padding: '20px',
-    border: '1px solid #ddd',
-    borderRadius: '8px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    backgroundColor: '#f9f9f9',
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: '20px',
-    fontSize: '24px',
-    color: '#333',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  input: {
-    padding: '10px',
-    margin: '8px 0',
-    fontSize: '16px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-  },
-  button: {
-    padding: '12px',
-    marginTop: '10px',
-    fontSize: '16px',
-    color: '#fff',
-    backgroundColor: '#0070f3',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s ease',
-  },
-  buttonHover: {
-    backgroundColor: '#005bb5',
-  },
-  message: {
-    marginTop: '20px',
-    textAlign: 'center',
-    color: '#0070f3',
-  },
-};
