@@ -19,10 +19,8 @@ export default function Login() {
     const data = await response.json();
 
     if (response.ok) {
-      // Redirection vers la page d'accueil en cas de succès
       window.location.href = '/home';
     } else {
-      // Affiche le message d'erreur s'il y a une erreur
       setMessage(data.message);
     }
   };
@@ -57,7 +55,9 @@ export default function Login() {
           justify-content: center;
           align-items: center;
           min-height: 100vh;
-          
+          background-color: #1e1e1e;
+          padding: 0 1rem;
+          box-sizing: border-box;
         }
         .form-wrapper {
           background-color: #333;
