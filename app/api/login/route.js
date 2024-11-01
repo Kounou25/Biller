@@ -3,7 +3,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import bcrypt from 'bcrypt';
 
 export async function POST(req) {
-  const { email, password } = await req.json(); // Adapté pour utiliser seulement email et password
+  const { email, password } = await req.json();
 
   // Vérification des champs
   if (!email || !password) {
@@ -28,6 +28,6 @@ export async function POST(req) {
     return new Response(JSON.stringify({ message: 'Mot de passe incorrect.' }), { status: 401 });
   }
 
-  // Connexion réussie
-  return new Response(JSON.stringify({ message: 'Connexion réussie.' }), { status: 200 });
+  // Connexion réussie, on renvoie l'utilisateur
+  return new Response(JSON.stringify({ message: 'Connexion réussie.', user: { id: data.id, email: data.email } }), { status: 200 });
 }

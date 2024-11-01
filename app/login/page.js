@@ -1,14 +1,18 @@
 // app/login/page.js
 'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation'; // Utiliser 'next/navigation' pour Next.js 13
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter(); // Récupérer le routeur
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const response = await fetch('/api/login', {
       method: 'POST',
@@ -17,11 +21,15 @@ export default function Login() {
     });
 
     const data = await response.json();
+    setLoading(false);
 
     if (response.ok) {
-      window.location.href = '/home';
+         // Stocker l'ID et l'email dans localStorage
+      localStorage.setItem('userId', data.user.id);
+      localStorage.setItem('userEmail', data.user.email);
+      router.push('/home'); // Redirection avec router
     } else {
-      setMessage(data.message);
+      setMessage(data.message || 'Une erreur est survenue.');
     }
   };
 
@@ -44,7 +52,9 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">Se connecter</button>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Chargement...' : 'Se connecter'}
+          </button>
         </form>
         {message && <p className="message">{message}</p>}
       </div>
@@ -102,6 +112,10 @@ export default function Login() {
         }
         button:hover {
           background-color: #45a049;
+        }
+        button:disabled {
+          background-color: #777;
+          cursor: not-allowed;
         }
         .message {
           margin-top: 1rem;
