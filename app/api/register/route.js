@@ -28,7 +28,8 @@ export async function POST(req) {
         company,
         mbp: hashedPassword,
       },
-    ]);
+    ])
+    .select(); // Ajout de .select() pour récupérer les données insérées
 
   if (error) {
     return new Response(JSON.stringify({ message: error.message }), { 
@@ -36,8 +37,11 @@ export async function POST(req) {
     });
   }
 
+  // Récupération de l'ID de l'utilisateur inséré
+  const userId = data[0].id; // Supposant que la colonne ID est nommée 'id'
+
   return new Response(
-    JSON.stringify({ message: 'Inscription réussie.' }),
+    JSON.stringify({ message: 'Inscription réussie.', user: { id: userId, email } }), // On retourne l'ID et l'email
     { status: 200 }
   );
 }

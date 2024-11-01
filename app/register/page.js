@@ -1,6 +1,7 @@
 // app/register/page.js
 'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation'; // Importation du router
 
 export default function Register() {
   const [nom, setNom] = useState('');
@@ -10,9 +11,12 @@ export default function Register() {
   const [mbp, setPassword] = useState('');
   const [company, setCompany] = useState('');
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false); // État pour le chargement
+  const router = useRouter(); // Initialisation du router
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true); // Activation de l'état de chargement
     const response = await fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -21,13 +25,14 @@ export default function Register() {
 
     const data = await response.json();
     if (response.ok) {
-        // Redirection vers la page de connexion en cas de succès
-        window.location.href = '/login';
-      } else {
-        // Affiche le message d'erreur s'il y a une erreur
-        setMessage(data.message);
-      }
-    
+      localStorage.setItem('userId', data.user.id); // Stockage de l'ID de l'utilisateur
+      localStorage.setItem('userEmail', data.user.email);
+      router.push('/customize'); // Redirection vers la page de personnalisation
+    } else {
+      // Affiche le message d'erreur s'il y a une erreur
+      setMessage(data.message);
+    }
+    setLoading(false); // Désactivation de l'état de chargement
   };
 
   return (
@@ -77,7 +82,9 @@ export default function Register() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">S'inscrire</button>
+          <button type="submit" disabled={loading} className={loading ? 'loading' : ''}>
+            {loading ? 'Envoi...' : "S'inscrire"}
+          </button>
         </form>
         {message && <p className="message">{message}</p>}
       </div>
@@ -154,11 +161,17 @@ export default function Register() {
           font-size: 16px;
           cursor: pointer;
           margin-top: 10px;
-          transition: background-color 0.3s;
+          transition: background-color 0.3s, transform 0.3s;
         }
 
         .form button:hover {
           background-color: #357abd;
+        }
+
+        .form button.loading {
+          background-color: #005bb5;
+          cursor: not-allowed;
+          transform: scale(1.05);
         }
 
         .message {
