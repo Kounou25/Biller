@@ -22,15 +22,18 @@ export default function CustomizeReceipt() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     const userId = localStorage.getItem('userId');
     if (!userId) {
       alert('Veuillez vous connecter pour continuer.');
       setLoading(false);
       return;
     }
-
+  
+    console.log('Données à insérer :', { cmpName, cmpTel, adresse, slogan, userId });
+  
     try {
+      // Insertion des informations de l'entreprise
       const { data: companyData, error: companyError } = await supabase
         .from('company')
         .insert([
@@ -39,40 +42,51 @@ export default function CustomizeReceipt() {
             cmpTel,
             adresse,
             slogan,
-            iduser: parseInt(userId),
+            iduser: parseInt(userId), // ID de l'utilisateur comme clé étrangère
           },
         ])
         .select();
-
-      if (companyError) throw companyError;
+  
+      if (companyError) {
+        console.error('Erreur d\'insertion de l\'entreprise :', companyError);
+        throw companyError;
+      }
       const companyId = companyData[0].idcmp;
-
+  
+      // Upload du logo
       if (logo) {
         const { data: logoData, error: logoError } = await supabase
           .storage
           .from('logos')
           .upload(`company-logos/${companyId}/${logo.name}`, logo);
-
-        if (logoError) throw logoError;
+  
+        if (logoError) {
+          console.error('Erreur de téléchargement du logo :', logoError);
+          throw logoError;
+        }
         const logoUrl = logoData.path;
-
+  
+        // Insertion des informations du logo avec l'ID de l'utilisateur
         const { error: logoInsertError } = await supabase
           .from('logos')
           .insert([
             {
               url: logoUrl,
-              idcmp: companyId,
+              iduser: parseInt(userId), // Ajout de l'ID de l'utilisateur
             },
           ]);
-
-        if (logoInsertError) throw logoInsertError;
+  
+        if (logoInsertError) {
+          console.error('Erreur d\'insertion du logo :', logoInsertError);
+          throw logoInsertError;
+        }
       }
-
+  
       alert('Informations enregistrées avec succès !');
-      router.push('/dashboard');
+      router.push('/home');
     } catch (error) {
       console.error('Erreur lors de l\'enregistrement :', error);
-      alert('Erreur lors de l\'enregistrement des informations.');
+      alert('Erreur lors de l\'enregistrement des informations : ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -133,6 +147,8 @@ export default function CustomizeReceipt() {
     </div>
   );
 }
+
+// Styles ici...
 
 const styles = {
   container: {
