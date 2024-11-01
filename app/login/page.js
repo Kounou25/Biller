@@ -1,14 +1,14 @@
 // app/login/page.js
 'use client';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Utiliser 'next/navigation' pour Next.js 13
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useRouter(); // Récupérer le routeur
+  const router = useRouter(); 
 
   const handleLogin = async (e) => {
     e.preventDefault();
