@@ -13,7 +13,7 @@ export async function POST(req) {
   // Récupération de l'utilisateur
   const { data, error } = await supabase
     .from('users')
-    .select('id, email, mbp') // 'mbp' doit correspondre à la colonne de mot de passe dans votre table
+    .select('id,nom, email, mbp') // 'mbp' doit correspondre à la colonne de mot de passe dans votre table
     .eq('email', email)
     .single();
 
@@ -29,5 +29,5 @@ export async function POST(req) {
   }
 
   // Connexion réussie, on renvoie l'utilisateur
-  return new Response(JSON.stringify({ message: 'Connexion réussie.', user: { id: data.id, email: data.email } }), { status: 200 });
+  return new Response(JSON.stringify({ message: 'Connexion réussie.', user: { id: data.id, nom: data.nom,email: data.email } }), { status: 200 });
 }

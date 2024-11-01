@@ -27,6 +27,7 @@ export default function Login() {
          // Stocker l'ID et l'email dans localStorage
       localStorage.setItem('userId', data.user.id);
       localStorage.setItem('userEmail', data.user.email);
+      localStorage.setItem('userName', data.user.nom);
       router.push('/home'); // Redirection avec router
     } else {
       setMessage(data.message || 'Une erreur est survenue.');

@@ -27,6 +27,7 @@ export default function Register() {
     if (response.ok) {
       localStorage.setItem('userId', data.user.id); // Stockage de l'ID de l'utilisateur
       localStorage.setItem('userEmail', data.user.email);
+
       router.push('/customize'); // Redirection vers la page de personnalisation
     } else {
       // Affiche le message d'erreur s'il y a une erreur
