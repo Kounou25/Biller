@@ -58,7 +58,7 @@ export default function CustomizeReceipt() {
         const { data: logoData, error: logoError } = await supabase
           .storage
           .from('logos')
-          .upload(`company-logos/${companyId}/${logo.name}`, logo);
+          .upload(`company-logos/${logo.name}`, logo);
   
         if (logoError) {
           console.error('Erreur de téléchargement du logo :', logoError);

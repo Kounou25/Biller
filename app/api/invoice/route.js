@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '../../../lib/supabaseClient';
 import { jsPDF } from 'jspdf';
+import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 import { Buffer } from 'buffer';
@@ -21,11 +22,13 @@ export async function POST(req) {
     const  {data,error} = await supabase 
     .from('logos')
     .select('url')
-    .eq('iduser'= 32)
+    .eq('iduser', 33)
     .single();
 
     if (error) throw error;
-    const logoUrl = data.url;
+    const baseUrl="https://fcrrnizcdydzpbzdvcgc.supabase.co/storage/v1/object/public/logos/";
+    const logoUrl =baseUrl+data.url;
+    console.log("url :",logoUrl);
 
 
     // Créer un nouveau document PDF avec une taille A5 (148mm x 210mm)
