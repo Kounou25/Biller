@@ -16,20 +16,24 @@ async function loadImageAsBase64FromUrl(url) {
 
 export async function POST(req) {
   try {
-    const { customer, email, items } = await req.json();
+    const { customer, email, items,userId } = await req.json();
     const total = items.reduce((sum, item) => sum + Number(item.quantity) * Number(item.price), 0);
-//requette pour recuperer le logo
+    // Côté client
+
+    
+
+    //requette pour recuperer le logo
     const  {data:logoData,error:logoError} = await supabase 
     .from('logos')
     .select('*')
-    .eq('iduser', 33)
+    .eq('iduser', userId)
     .single();
 
     //requete pour recuperer les utilisateurs
     const {data : usersData, error: usersError} = await supabase
     .from('users') 
     .select('*') 
-    .eq('id', 33) 
+    .eq('id', userId) 
     .single();
 
     //requete pour recuperer les informations de la compagnie
@@ -37,7 +41,7 @@ export async function POST(req) {
     const {data :companyData, error:companyError} = await supabase
     .from('company') 
     .select('*') 
-    .eq('iduser', 33) 
+    .eq('iduser', userId) 
     .single();  
 
     if (logoError) throw logoError;

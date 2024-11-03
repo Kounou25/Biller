@@ -8,12 +8,14 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const userId = localStorage.getItem('userId');
+
      
     
     const response = await fetch('/api/invoice', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ customer, email, items })
+      body: JSON.stringify({ customer, email, items,userId })
     });
 
     const blob = await response.blob();
