@@ -18,17 +18,33 @@ export async function POST(req) {
   try {
     const { customer, email, items } = await req.json();
     const total = items.reduce((sum, item) => sum + Number(item.quantity) * Number(item.price), 0);
-
-    const  {data,error} = await supabase 
+//requette pour recuperer le logo
+    const  {data:logoData,error:logoError} = await supabase 
     .from('logos')
-    .select('url')
+    .select('*')
     .eq('iduser', 33)
     .single();
 
-    if (error) throw error;
+    //requete pour recuperer les utilisateurs
+    const {data : usersData, error: usersError} = await supabase
+    .from('users') 
+    .select('*') 
+    .eq('id', 33) 
+    .single();
+
+    //requete pour recuperer les informations de la compagnie
+
+    const {data :companyData, error:companyError} = await supabase
+    .from('company') 
+    .select('*') 
+    .eq('iduser', 33) 
+    .single();  
+
+    if (logoError) throw logoError;
     const baseUrl="https://fcrrnizcdydzpbzdvcgc.supabase.co/storage/v1/object/public/logos/";
-    const logoUrl =baseUrl+data.url;
+    const logoUrl =baseUrl+logoData.url;
     console.log("url :",logoUrl);
+    console.log("data :",companyData);
 
 
     // Créer un nouveau document PDF avec une taille A5 (148mm x 210mm)
@@ -107,7 +123,7 @@ export async function POST(req) {
     doc.setFontSize(10);
     doc.setFont("helvetica", "italic");
     doc.setTextColor(150, 150, 150); // Gris clair pour le message
-    doc.text("\n\n\n\n\n\nTIKITA PRO V1\n Logiciel en ligne de generation de recu \n Personnalisez le votre au :00227 88715276", 75, totalYPosition + 25, { align: "center" });
+    doc.text(`\n\n\n\n\n\n  ${companyData.slogan} \n Pe`, 75, totalYPosition + 25, { align: "center" });
 
     // Ajouter la date et l'heure d'émission du reçu en bas à droite
     const date = new Date().toLocaleDateString('fr-FR'); // Format de date français
