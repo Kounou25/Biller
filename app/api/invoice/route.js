@@ -127,7 +127,7 @@ export async function POST(req) {
     doc.setFontSize(10);
     doc.setFont("helvetica", "italic");
     doc.setTextColor(150, 150, 150); // Gris clair pour le message
-    doc.text(`\n\n\n\n\n\n  ${companyData.slogan} \n Pe`, 75, totalYPosition + 25, { align: "center" });
+    doc.text(`\n\n\n\n\n\n ${companyData.cmpName}\n ${companyData.slogan} \n ${companyData.adresse}\n ${companyData.cmpTel}`, 75, totalYPosition + 25, { align: "center" });
 
     // Ajouter la date et l'heure d'émission du reçu en bas à droite
     const date = new Date().toLocaleDateString('fr-FR'); // Format de date français
