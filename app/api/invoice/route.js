@@ -76,7 +76,7 @@ export async function POST(req) {
     doc.text(`Numero de tel: ${email}`, 15, 52);
 
     // Dessiner une ligne de séparation
-    doc.setDrawColor(128, 0, 128); // Couleur de la ligne
+    doc.setDrawColor(`${companyData.color}`); // Couleur de la ligne
     doc.line(10, 58, 140, 58); // Ligne ajustée
 
     // Ajouter les en-têtes du tableau
@@ -85,7 +85,7 @@ export async function POST(req) {
 
     doc.setFontSize(10);
     doc.setTextColor(255, 255, 255); // Couleur du texte
-    doc.setFillColor(128, 0, 128); // Couleur de fond pour les en-têtes
+    doc.setFillColor(`${companyData.color}`); // Couleur de fond pour les en-têtes
     doc.rect(10, tableStartY, 130, rowHeight, 'F'); // Fond pour les en-têtes
 
     // Ajuster les positions des colonnes
@@ -95,7 +95,7 @@ export async function POST(req) {
     doc.text("Total (CFA)", 110, tableStartY + 6); // Colonne Total (avec plus d'espace)
 
     // Dessiner une ligne sous les en-têtes
-    doc.setDrawColor(128, 0, 128);
+    doc.setDrawColor(`${companyData.color}`);
     doc.line(10, tableStartY + rowHeight, 140, tableStartY + rowHeight); // Ligne ajustée
 
     // Ajouter les articles
@@ -116,11 +116,11 @@ export async function POST(req) {
     // Ajouter le total
     const totalYPosition = tableStartY + rowHeight * (items.length + 2);
     doc.setFontSize(14);
-    doc.setTextColor(128, 0, 128); // Couleur du total
+    doc.setTextColor(`${companyData.color}`); // Couleur du total
     doc.text(`Total: ${total.toFixed(2)} CFA`, 12, totalYPosition + 10);
 
     //Ajouter une ligne sous le total
-    doc.setDrawColor(128, 0, 128);
+    doc.setDrawColor(`${companyData.color}`);
     doc.line(10, totalYPosition + 15, 140, totalYPosition + 15);
 
     // Ajouter un message de remerciement centré en bas

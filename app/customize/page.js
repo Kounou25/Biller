@@ -10,6 +10,7 @@ export default function CustomizeReceipt() {
   const [cmpTel, setCmpTel] = useState('');
   const [adresse, setAdresse] = useState('');
   const [slogan, setSlogan] = useState('');
+  const [color, setColor] = useState('');
   const [logo, setLogo] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function CustomizeReceipt() {
       return;
     }
   
-    console.log('Données à insérer :', { cmpName, cmpTel, adresse, slogan, userId });
+    console.log('Données à insérer :', { cmpName, cmpTel, adresse, slogan,color, userId });
   
     try {
       // Insertion des informations de l'entreprise
@@ -42,6 +43,7 @@ export default function CustomizeReceipt() {
             cmpTel,
             adresse,
             slogan,
+            color,
             iduser: parseInt(userId), // ID de l'utilisateur comme clé étrangère
           },
         ])
@@ -131,6 +133,14 @@ export default function CustomizeReceipt() {
             onChange={(e) => setSlogan(e.target.value)} 
             style={styles.input} 
           />
+
+<label style={styles.label}>Color :</label>
+<input 
+  type="color" 
+  value={color} 
+  onChange={(e) => setColor(e.target.value)} 
+  style={{ ...styles.input, backgroundColor: color }} 
+/>
           
           <label style={styles.label}>Logo :</label>
           <input 
