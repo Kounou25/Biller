@@ -17,7 +17,7 @@ export default function Dashboard() {
         <nav>
           <ul style={styles.navList}>
             <li style={styles.navItem}><a href="#" style={styles.navLink}>Accueil</a></li>
-            <li style={styles.navItem}><a href="#" style={styles.navLink}>Générer un Reçu</a></li>
+            <li style={styles.navItem}><a href="/facture" style={styles.navLink}>Générer un Reçu</a></li>
             <li style={styles.navItem}><a href="#" style={styles.navLink}>Mes Reçus</a></li>
             <li style={styles.navItem}><a href="#" style={styles.navLink}>Paramètres</a></li>
             <li style={styles.navItem}><a href="#" style={styles.navLink}>Déconnexion</a></li>
