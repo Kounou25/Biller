@@ -1,13 +1,16 @@
 import { NextResponse } from 'next/server';
+import { supabase } from '../../../lib/supabaseClient';
 import { jsPDF } from 'jspdf';
 import fs from 'fs';
 import path from 'path';
 import { Buffer } from 'buffer';
+import { ifError } from 'assert';
 
 // Fonction pour convertir une image en base64 depuis le système de fichiers
-function loadImageAsBase64(filePath) {
-  const image = fs.readFileSync(filePath);
-  return `data:image/png;base64,${image.toString('base64')}`;
+async function loadImageAsBase64FromUrl(url) {
+  const response = await axios.get(url, { responseType: 'arraybuffer' });
+  const base64 = Buffer.from(response.data, 'binary').toString('base64');
+  return `data:image/png;base64,${base64}`;
 }
 
 export async function POST(req) {
@@ -15,14 +18,23 @@ export async function POST(req) {
     const { customer, email, items } = await req.json();
     const total = items.reduce((sum, item) => sum + Number(item.quantity) * Number(item.price), 0);
 
+    const  {data,error} = await supabase 
+    .from('logos')
+    .select('url')
+    .eq('iduser'= 32)
+    .single();
+
+    if (error) throw error;
+    const logoUrl = data.url;
+
+
     // Créer un nouveau document PDF avec une taille A5 (148mm x 210mm)
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
 
     // Chemin absolu vers le logo
-    const logoPath = path.join(process.cwd(), 'app', 'images', 'logo_blank.jpg');
 
     // Charger le logo en base64 depuis le disque
-    const logoBase64 = loadImageAsBase64(logoPath);
+    const logoBase64 = await loadImageAsBase64FromUrl(logoUrl);
 
     // Ajouter le logo en haut à droite
     doc.addImage(logoBase64, 'PNG', 80, 10, 65, 40); // Ajuste la position et la taille du logo
