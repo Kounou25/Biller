@@ -90,6 +90,7 @@ const styles = {
     backgroundColor: '#181818',
     color: '#EAEAEA',
     fontFamily: 'Arial, sans-serif',
+    transition: 'background-color 0.5s ease',
   },
   header: {
     backgroundColor: '#1E1E1E',
@@ -101,6 +102,7 @@ const styles = {
     marginBottom: '5px',
     fontSize: '2.5em',
     color: '#A3BE8C',
+    animation: 'fadeIn 0.5s ease-in-out',
   },
   userGreeting: {
     marginBottom: '10px',
@@ -123,6 +125,10 @@ const styles = {
     textDecoration: 'none',
     fontSize: '1.1em',
     transition: 'color 0.3s',
+    '&:hover': {
+      color: '#B48EAD',
+      transform: 'scale(1.05)',
+    },
   },
   main: {
     flex: 1,
@@ -130,6 +136,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    animation: 'fadeIn 0.5s ease-in-out',
   },
   cards: {
     display: 'grid',
@@ -145,6 +152,9 @@ const styles = {
     textAlign: 'center',
     transition: 'transform 0.3s',
     boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
+    '&:hover': {
+      transform: 'scale(1.05)',
+    },
   },
   cardTitle: {
     marginBottom: '10px',
@@ -160,6 +170,7 @@ const styles = {
     padding: '20px',
     width: '100%',
     maxWidth: '800px',
+    animation: 'fadeIn 0.5s ease-in-out',
   },
   receiptsTitle: {
     marginBottom: '15px',
@@ -188,5 +199,27 @@ const styles = {
     cursor: 'pointer',
     transition: 'background-color 0.3s, transform 0.2s',
     display: 'inline-block',
+    '&:hover': {
+      backgroundColor: '#A3BE8C',
+      transform: 'translateY(-2px)',
+    },
   },
 };
+
+// Ajouter les animations CSS
+const fadeIn = `
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+`;
+
+// Injecter les animations dans le style de la page
+const styleSheet = document.createElement("style");
+styleSheet.type = "text/css";
+styleSheet.innerText = fadeIn;
+document.head.appendChild(styleSheet);
