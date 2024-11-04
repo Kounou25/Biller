@@ -18,11 +18,19 @@ export async function POST(req) {
   try {
     const { customer, email, items,userId } = await req.json();
     const total = items.reduce((sum, item) => sum + Number(item.quantity) * Number(item.price), 0);
-    // Côté client
+    const quantity = items.reduce((sum, item) => sum + Number(item.quantity), 0);
+    // Côté clienth
 
-    
-
-    //requette pour recuperer le logo
+     
+    const { data: billInsert,error: billError } = await supabase
+    .from('bills')
+    .insert([{ clientname: customer, clienttel:email,quantity:quantity, total, iduser:userId }]);
+  if (billError) {
+    console.error("Error inserting bill:", billError);
+    throw billError;
+  }
+ 
+    //requette pour h recuperer le logo
     const  {data:logoData,error:logoError} = await supabase 
     .from('logos')
     .select('*')
@@ -43,6 +51,11 @@ export async function POST(req) {
     .select('*') 
     .eq('iduser', userId) 
     .single();  
+
+
+    //insertion des donnees des factures dans la base de donnees
+
+    
 
     if (logoError) throw logoError;
     const baseUrl="https://fcrrnizcdydzpbzdvcgc.supabase.co/storage/v1/object/public/logos/";
@@ -98,13 +111,14 @@ export async function POST(req) {
     doc.setDrawColor(`${companyData.color}`);
     doc.line(10, tableStartY + rowHeight, 140, tableStartY + rowHeight); // Ligne ajustée
 
-    // Ajouter les articles
+    // Ajouter les articles oya baba danse
     items.forEach((item, index) => {
       const description = item.description || '';
       const quantity = Number(item.quantity);
       const price = Number(item.price);
       const itemTotal = quantity * price;
 
+     
       const yPosition = tableStartY + rowHeight * (index + 2);
       doc.setTextColor(0, 0, 0); // Couleur du texte pour les articles
       doc.text(description, 12, yPosition);
@@ -113,6 +127,9 @@ export async function POST(req) {
       doc.text(`${itemTotal.toFixed(2)} CFA`, 110, yPosition); // Espacement ajusté
     });
 
+
+    
+   
     // Ajouter le total
     const totalYPosition = tableStartY + rowHeight * (items.length + 2);
     doc.setFontSize(14);
