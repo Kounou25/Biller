@@ -1,12 +1,55 @@
+
 "use client";
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function Dashboard() {
   const [userEmail, setUserEmail] = useState('');
+  const [nombreData, setNombreData] = useState(0);
+  const [billingData, setBillingData] = useState([]);
 
   useEffect(() => {
+    // Récupérer les données côté client
+    //recuperation d'id du user
+    const userId = localStorage.getItem('userId');
+
+    const fetchData = async () => {
+      const { data: billingData, error: billingError } = await supabase
+        .from('bills')
+        .select('*')
+        .eq('iduser', userId);
+
+      const { data: nombreData, error: nombreError } = await supabase
+        .from('bills')
+        .select('id', { count: 'exact' })
+        .eq('iduser', userId);
+        console.log(nombreData);
+
+      if (!billingError) setBillingData(billingData || []);
+      if (!nombreError) setNombreData(nombreData?.length || 0);
+    };
+
+    fetchData();
+
     const email = localStorage.getItem('userEmail');
     setUserEmail(email);
+
+    // Injecter les animations CSS côté client
+    const styleSheet = document.createElement("style");
+    styleSheet.type = "text/css";
+    styleSheet.innerText = `
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+    `;
+    document.head.appendChild(styleSheet);
+
+    // Nettoyage : supprimer le style à la sortie
+    return () => {
+      document.head.removeChild(styleSheet);
+    };
   }, []);
 
   return (
@@ -29,7 +72,7 @@ export default function Dashboard() {
         <section style={styles.cards}>
           <div style={styles.card}>
             <h2 style={styles.cardTitle}>Reçus Générés</h2>
-            <p style={styles.cardValue}>45</p>
+            <p style={styles.cardValue}>{nombreData}</p>
             <a href="#" style={styles.button}>Voir Détails</a>
           </div>
           <div style={styles.card}>
@@ -50,30 +93,25 @@ export default function Dashboard() {
             <thead>
               <tr>
                 <th style={styles.th}>ID</th>
+                <th style={styles.th}>client</th>
+                <th style={styles.th}>contact</th>
+                <th style={styles.th}>Quantite</th>
+                <th style={styles.th}>Montant T</th>
                 <th style={styles.th}>Date</th>
-                <th style={styles.th}>Montant</th>
-                <th style={styles.th}>Client</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td style={styles.td}>001</td>
-                <td style={styles.td}>2024-10-30</td>
-                <td style={styles.td}>€50</td>
-                <td style={styles.td}>Client A</td>
-              </tr>
-              <tr>
-                <td style={styles.td}>002</td>
-                <td style={styles.td}>2024-10-29</td>
-                <td style={styles.td}>€75</td>
-                <td style={styles.td}>Client B</td>
-              </tr>
-              <tr>
-                <td style={styles.td}>003</td>
-                <td style={styles.td}>2024-10-28</td>
-                <td style={styles.td}>€100</td>
-                <td style={styles.td}>Client C</td>
-              </tr>
+              {billingData.map((bill, index) => (
+                <tr key={index}>
+                  <td style={styles.td}>{bill.idbill}</td>
+                  <td style={styles.td}>{bill.clientname}</td>
+                  <td style={styles.td}>{bill.clienttel}</td>
+                  <td style={styles.td}>{bill.quantity}</td>
+                  <td style={styles.td}>{bill.total}</td>
+                  <td style={styles.td}>{bill.created_at}</td>
+
+                </tr>
+              ))}
             </tbody>
           </table>
         </section>
@@ -83,6 +121,7 @@ export default function Dashboard() {
 }
 
 const styles = {
+  // Vos styles existants ici...
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -204,22 +243,5 @@ const styles = {
       transform: 'translateY(-2px)',
     },
   },
+  
 };
-
-// Ajouter les animations CSS
-const fadeIn = `
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-`;
-
-// Injecter les animations dans le style de la page
-const styleSheet = document.createElement("style");
-styleSheet.type = "text/css";
-styleSheet.innerText = fadeIn;
-document.head.appendChild(styleSheet);
