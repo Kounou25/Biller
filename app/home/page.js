@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome, faFileInvoice, faReceipt, faCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+
 
 export default function Dashboard() {
   const [userEmail, setUserEmail] = useState('');
@@ -79,11 +82,10 @@ export default function Dashboard() {
         {userEmail && <p style={styles.userGreeting}>Bienvenue, {userEmail}!</p>}
         <nav>
           <ul style={styles.navList}>
-            <li style={styles.navItem}><a href="#" style={styles.navLink}>Accueil</a></li>
-            <li style={styles.navItem}><a href="/facture" style={styles.navLink}>Générer un Reçu</a></li>
-            <li style={styles.navItem}><a href="#" style={styles.navLink}>Mes Reçus</a></li>
-            <li style={styles.navItem}><a href="#" style={styles.navLink}>Paramètres</a></li>
-            <li style={styles.navItem}><a href="#" style={styles.logoutButton}>Déconnexion</a></li>
+            <li style={styles.navItem}><a href="/facture" style={styles.navLink}> <FontAwesomeIcon icon={faFileInvoice} style={{ marginRight: '8px' }} />Générer un Reçu</a></li>
+            <li style={styles.navItem}><a href="#" style={styles.navLink}><FontAwesomeIcon icon={faReceipt} style={{ marginRight: '8px' }} />Mes Reçus</a></li>
+            <li style={styles.navItem}><a href="#" style={styles.navLink}><FontAwesomeIcon icon={faCog} style={{ marginRight: '8px' }} />Paramètres</a></li>
+            <li style={styles.navItem}><a href="#" style={styles.logoutButton}> <FontAwesomeIcon icon={faSignOutAlt} style={{ marginRight: '8px' }} />Déconnexion</a></li>
           </ul>
         </nav>
       </header>
