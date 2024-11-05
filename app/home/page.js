@@ -84,7 +84,7 @@ export default function Dashboard() {
           <ul style={styles.navList}>
             <li style={styles.navItem}><a href="/facture" style={styles.navLink}> <FontAwesomeIcon icon={faFileInvoice} style={{ marginRight: '8px' }} />Générer un Reçu</a></li>
             <li style={styles.navItem}><a href="#" style={styles.navLink}><FontAwesomeIcon icon={faReceipt} style={{ marginRight: '8px' }} />Mes Reçus</a></li>
-            <li style={styles.navItem}><a href="#" style={styles.navLink}><FontAwesomeIcon icon={faCog} style={{ marginRight: '8px' }} />Paramètres</a></li>
+            <li style={styles.navItem}><a href="/abonement" style={styles.navLink}><FontAwesomeIcon icon={faCog} style={{ marginRight: '8px' }} />Paramètres</a></li>
             <li style={styles.navItem}><a href="#" style={styles.logoutButton}> <FontAwesomeIcon icon={faSignOutAlt} style={{ marginRight: '8px' }} />Déconnexion</a></li>
           </ul>
         </nav>
