@@ -8,6 +8,9 @@ export default function Dashboard() {
   const [userEmail, setUserEmail] = useState('');
   const [nombreData, setNombreData] = useState(0);
   const [billingData, setBillingData] = useState([]);
+  const [totalRecette, setTotalRecette] = useState(0);
+  const [totalQuantity, setTotalQantity] = useState(0);
+
 
   useEffect(() => {
     // Récupérer les données côté client
@@ -15,16 +18,33 @@ export default function Dashboard() {
     const userId = localStorage.getItem('userId');
 
     const fetchData = async () => {
+      //recuperaation des donnees des recus
       const { data: billingData, error: billingError } = await supabase
         .from('bills')
         .select('*')
         .eq('iduser', userId);
 
+        //recuperation des recettes total
+        const { data: recetteData, error: recetteError } = await supabase
+        .rpc('get_total_recette', { user_id: userId });
+
+      if (!recetteError) setTotalRecette(recetteData || 0);
+
+      //recuperation de la quantite total de produitd vendus
+      const{data: quantityData, error: quantityError} = await supabase
+       .rpc('total_quantity',{user_id: userId});
+
+       if(!quantityError) setTotalQantity(quantityData || 0);
+    
+
+      //recuperation du nombre de recus generer
       const { data: nombreData, error: nombreError } = await supabase
         .from('bills')
-        .select('id', { count: 'exact' })
+        .select('*', { count: 'exact' })
         .eq('iduser', userId);
-        console.log(nombreData);
+        console.log("nombre".nombreData);
+
+        
 
       if (!billingError) setBillingData(billingData || []);
       if (!nombreError) setNombreData(nombreData?.length || 0);
@@ -77,12 +97,12 @@ export default function Dashboard() {
           </div>
           <div style={styles.card}>
             <h2 style={styles.cardTitle}>Revenus Totaux</h2>
-            <p style={styles.cardValue}>€3200</p>
+            <p style={styles.cardValue}>{totalRecette} FCA</p>
             <a href="#" style={styles.button}>Voir Détails</a>
           </div>
           <div style={styles.card}>
-            <h2 style={styles.cardTitle}>Utilisateurs Actifs</h2>
-            <p style={styles.cardValue}>120</p>
+            <h2 style={styles.cardTitle}>quantite vendues</h2>
+            <p style={styles.cardValue}>{totalQuantity}</p>
             <a href="#" style={styles.button}>Voir Détails</a>
           </div>
         </section>
