@@ -83,7 +83,7 @@ export default function Dashboard() {
             <li style={styles.navItem}><a href="/facture" style={styles.navLink}>Générer un Reçu</a></li>
             <li style={styles.navItem}><a href="#" style={styles.navLink}>Mes Reçus</a></li>
             <li style={styles.navItem}><a href="#" style={styles.navLink}>Paramètres</a></li>
-            <li style={styles.navItem}><a href="#" style={styles.navLink}>Déconnexion</a></li>
+            <li style={styles.navItem}><a href="#" style={styles.logoutButton}>Déconnexion</a></li>
           </ul>
         </nav>
       </header>
@@ -141,33 +141,32 @@ export default function Dashboard() {
 }
 
 const styles = {
-  // Vos styles existants ici...
   container: {
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
-    backgroundColor: '#181818',
-    color: '#EAEAEA',
+    backgroundColor: '#F3F4F6',
+    color: '#333',
     fontFamily: 'Arial, sans-serif',
     transition: 'background-color 0.5s ease',
   },
   header: {
-    backgroundColor: '#1E1E1E',
+    backgroundColor: '#FFFFFF',
     padding: '20px',
     textAlign: 'center',
-    borderBottom: '2px solid #333',
+    borderBottom: '2px solid #e5e7eb',
   },
   title: {
     marginBottom: '5px',
-    fontSize: '2.5em',
-    color: '#A3BE8C',
+    fontSize: '2.2em',
+    color: '#2563EB',
     animation: 'fadeIn 0.5s ease-in-out',
   },
   userGreeting: {
     marginBottom: '10px',
-    fontSize: '1.2em',
+    fontSize: '1.1em',
     fontStyle: 'italic',
-    color: '#B48EAD',
+    color: '#6B7280',
   },
   navList: {
     listStyleType: 'none',
@@ -175,18 +174,25 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     flexWrap: 'wrap',
+    gap: '15px',
+    marginTop: '10px',
   },
   navItem: {
     margin: '0 10px',
   },
   navLink: {
-    color: '#A3BE8C',
+    color: '#2563EB',
     textDecoration: 'none',
     fontSize: '1.1em',
-    transition: 'color 0.3s',
+    padding: '8px 16px',
+    borderRadius: '5px',
+    transition: 'all 0.3s ease',
+    backgroundColor: '#E5E7EB',
+  },
+  navLinkHover: {
     '&:hover': {
-      color: '#B48EAD',
-      transform: 'scale(1.05)',
+      backgroundColor: '#2563EB',
+      color: '#FFFFFF',
     },
   },
   main: {
@@ -205,35 +211,39 @@ const styles = {
     marginBottom: '20px',
   },
   card: {
-    backgroundColor: '#2E3440',
+    backgroundColor: '#FFFFFF',
     padding: '20px',
     borderRadius: '8px',
     textAlign: 'center',
     transition: 'transform 0.3s',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
     '&:hover': {
       transform: 'scale(1.05)',
     },
   },
   cardTitle: {
     marginBottom: '10px',
-    fontSize: '1.5em',
+    fontSize: '1.4em',
+    color: '#111827',
   },
   cardValue: {
-    fontSize: '24px',
+    fontSize: '1.8em',
     fontWeight: 'bold',
+    color: '#111827',
   },
   recentReceipts: {
-    backgroundColor: '#2E3440',
+    backgroundColor: '#FFFFFF',
     borderRadius: '8px',
     padding: '20px',
     width: '100%',
     maxWidth: '800px',
     animation: 'fadeIn 0.5s ease-in-out',
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
   },
   receiptsTitle: {
     marginBottom: '15px',
-    fontSize: '1.5em',
+    fontSize: '1.4em',
+    color: '#111827',
   },
   table: {
     width: '100%',
@@ -241,16 +251,31 @@ const styles = {
   },
   th: {
     padding: '10px',
-    backgroundColor: '#5E81AC',
-    color: '#EAEAEA',
+    backgroundColor: '#E5E7EB',
+    color: '#111827',
+    fontWeight: '600',
   },
   td: {
     padding: '10px',
-    borderBottom: '1px solid #4C566A',
+    borderBottom: '1px solid #E5E7EB',
+  },
+
+  logoutButton: {
+    color: '#EAEAEA',
+    backgroundColor: '#D32F2F',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    textDecoration: 'none',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s, transform 0.2s',
+    '&:hover': {
+      backgroundColor: '#B71C1C',
+      transform: 'scale(1.05)',
+    },
   },
   button: {
-    backgroundColor: '#5E81AC',
-    color: '#EAEAEA',
+    backgroundColor: '#2563EB',
+    color: '#FFFFFF',
     border: 'none',
     borderRadius: '5px',
     padding: '10px 20px',
@@ -258,10 +283,26 @@ const styles = {
     cursor: 'pointer',
     transition: 'background-color 0.3s, transform 0.2s',
     display: 'inline-block',
+  },
+  buttonHover: {
     '&:hover': {
-      backgroundColor: '#A3BE8C',
+      backgroundColor: '#1E3A8A',
       transform: 'translateY(-2px)',
     },
   },
-  
+  '@media (max-width: 768px)': {
+    title: {
+      fontSize: '1.8em',
+    },
+    navList: {
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '10px',
+    },
+    navLink: {
+      padding: '10px 15px',
+      fontSize: '1em',
+    },
+  },
 };
+
