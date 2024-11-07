@@ -10,6 +10,8 @@ export default function AbonnementForm() {
   const [duree, setDuree] = useState('0'); // 0 pour 1 mois, 1 pour 12 mois
   const [code, setCode] = useState('');
   const [abonnementActif, setAbonnementActif] = useState(null); // État pour l'abonnement actif
+  const [loading, setLoading] = useState(false); // Indicateur de chargement
+  const [message, setMessage] = useState({ text: '', type: '' }); // Message de succès ou d'erreur
   const router = useRouter();
 
   // Simuler la récupération d'un abonnement actif (normalement, cela viendrait d'une API)
@@ -25,6 +27,8 @@ export default function AbonnementForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Début de l'animation de chargement
+
     const userId = localStorage.getItem('userId');
 
     const abonnementData = {
@@ -34,17 +38,23 @@ export default function AbonnementForm() {
       userId,
     };
 
-    const response = await fetch('/api/abonnement', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(abonnementData),
-    });
+    try {
+      const response = await fetch('/api/abonnement', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(abonnementData),
+      });
 
-    if (response.ok) {
-      alert('Abonnement créé avec succès!');
-      router.push('/home'); // Redirection après succès
-    } else {
-      alert('Erreur lors de la création de l’abonnement.');
+      if (response.ok) {
+        setMessage({ text: 'Abonnement créé avec succès!', type: 'success' });
+        setTimeout(() => router.push('/home'), 1500); // Redirection après succès
+      } else {
+        setMessage({ text: 'Erreur lors de la création de l’abonnement.', type: 'error' });
+      }
+    } catch (error) {
+      setMessage({ text: 'Erreur lors de la communication avec le serveur.', type: 'error' });
+    } finally {
+      setLoading(false); // Fin de l'animation de chargement
     }
   };
 
@@ -109,9 +119,18 @@ export default function AbonnementForm() {
             />
           </label>
 
-          <button type="submit" style={styles.button}>Souscrire</button>
+          <button type="submit" style={styles.button} disabled={loading}>
+            {loading ? 'Souscription en cours...' : 'Souscrire'}
+          </button>
         </form>
       </div>
+
+      {/* Popup de message */}
+      {message.text && (
+        <div style={{ ...styles.popup, backgroundColor: message.type === 'success' ? '#28a745' : '#dc3545' }}>
+          <p style={styles.popupText}>{message.text}</p>
+        </div>
+      )}
     </div>
   );
 }
@@ -197,5 +216,19 @@ const styles = {
     fontWeight: 'bold',
     marginTop: '20px',
     transition: 'background-color 0.3s',
+  },
+  popup: {
+    position: 'fixed',
+    top: '20px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    padding: '15px',
+    borderRadius: '5px',
+    zIndex: 1000,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  popupText: {
+    margin: 0,
   },
 };
