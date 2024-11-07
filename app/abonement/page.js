@@ -25,11 +25,13 @@ export default function AbonnementForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const userId = localStorage.getItem('userId');
 
     const abonnementData = {
       montant: parseFloat(montant),
       duree: parseInt(duree),
       code,
+      userId,
     };
 
     const response = await fetch('/api/abonnement', {
@@ -40,7 +42,7 @@ export default function AbonnementForm() {
 
     if (response.ok) {
       alert('Abonnement créé avec succès!');
-      router.push('/dashboard'); // Redirection après succès
+      router.push('/home'); // Redirection après succès
     } else {
       alert('Erreur lors de la création de l’abonnement.');
     }
