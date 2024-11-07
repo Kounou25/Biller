@@ -5,35 +5,48 @@ export default function Home() {
   const [customer, setCustomer] = useState('');
   const [email, setEmail] = useState('');
   const [items, setItems] = useState([{ description: '', quantity: 1, price: 0 }]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
+  const [popupType, setPopupType] = useState(''); // 'success' ou 'error'
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     const userId = localStorage.getItem('userId');
 
-     
-    
-    const response = await fetch('/api/invoice', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ customer, email, items,userId })
-    });
+    try {
+      const response = await fetch('/api/invoice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customer, email, items, userId })
+      });
 
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Tikita-pro recu ${customer}`;
-    a.click();
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Tikita-pro recu ${customer}`;
+      a.click();
+
+      setPopupMessage('Reçu généré avec succès !');
+      setPopupType('success');
+    } catch (error) {
+      setPopupMessage('Erreur lors de la génération du reçu.');
+      setPopupType('error');
+    } finally {
+      setIsLoading(false);
+      setTimeout(() => setPopupMessage(''), 3000); // Cache le popup après 3 secondes
+    }
   };
 
   const addItem = () => {
-    setItems([...items, { description: '', quantity: null , price: 0 }]);
+    setItems([...items, { description: '', quantity: null, price: 0 }]);
   };
 
   return (
     <>
       <div className="form-container">
-        <h1 >TIKITA PRO </h1>
+        <h1>TIKITA PRO</h1>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -88,17 +101,24 @@ export default function Home() {
           <button className="add-item-btn" type="button" onClick={addItem}>
             ajouter a la facture
           </button>
-          <button className="submit-btn" type="submit">
-            Generer le recu
+          <button className="submit-btn" type="submit" disabled={isLoading}>
+            {isLoading ? 'Chargement...' : 'Generer le recu'}
           </button>
         </form>
+
+        {/* Popup de message */}
+        {popupMessage && (
+          <div className={`popup ${popupType}`}>
+            {popupMessage}
+          </div>
+        )}
       </div>
 
       <footer>
         <p><strong>TIKITA PRO V1</strong></p>
         <p>Créée avec ❤️ par <a href="https://wa.me/22788715276" target="_blank">Kounou Gilbert</a></p>
-        </footer>
-        <script src="https://feedyourback.com/tunnel.js" data-id='cm2hf1xnk02ikuwx1qyjef01w' defer ></script>
+      </footer>
+
       <style jsx>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
@@ -111,6 +131,7 @@ export default function Home() {
           box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
           font-family: 'Inter', sans-serif;
           color: black;
+          position: relative;
         }
 
         h1 {
@@ -120,15 +141,15 @@ export default function Home() {
           font-weight: 600;
         }
 
-        input {
+        input, .add-item-btn, .submit-btn {
           width: 100%;
           padding: 14px;
           margin-bottom: 20px;
-          border: 1px solid #ccc;
           border-radius: 8px;
           font-size: 1rem;
           background: rgba(0, 0, 0, 0.05);
           color: black;
+          border: 1px solid #ccc;
           transition: background 0.3s ease, box-shadow 0.3s ease;
         }
 
@@ -148,42 +169,50 @@ export default function Home() {
         }
 
         .add-item-btn {
-          width: 100%;
-          padding: 12px;
           background-color: #ff9800;
           color: white;
           border: none;
-          border-radius: 8px;
-          font-size: 1rem;
           cursor: pointer;
-          transition: background-color 0.3s ease;
-          margin-bottom: 20px;
-        }
-
-        .add-item-btn:hover {
-          background-color: #e68900;
         }
 
         .submit-btn {
-          width: 100%;
-          padding: 15px;
           background-color: #2196f3;
           color: white;
           border: none;
           font-size: 1.2rem;
-          border-radius: 8px;
           cursor: pointer;
-          transition: background-color 0.3s ease;
         }
 
-        .submit-btn:hover {
-          background-color: #1e88e5;
+        .popup {
+          position: absolute;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 15px 20px;
+          border-radius: 8px;
+          color: white;
+          font-weight: 600;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          animation: fadeInOut 3s ease;
+        }
+
+        .popup.success {
+          background-color: #4caf50;
+        }
+
+        .popup.error {
+          background-color: #f44336;
+        }
+
+        @keyframes fadeInOut {
+          0%, 100% { opacity: 0; }
+          10%, 90% { opacity: 1; }
         }
 
         footer {
           text-align: center;
           padding: 20px;
-          color : white;
+          color: white;
           margin-top: 40px;
         }
 
@@ -199,10 +228,6 @@ export default function Home() {
         @media (max-width: 600px) {
           .item {
             flex-direction: column;
-          }
-
-          h1 {
-            font-size: 1.8rem;
           }
         }
       `}</style>
