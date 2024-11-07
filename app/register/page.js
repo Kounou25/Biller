@@ -1,4 +1,3 @@
-// app/register/page.js
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // Importation du router
@@ -12,6 +11,7 @@ export default function Register() {
   const [company, setCompany] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false); // État pour le chargement
+  const [popup, setPopup] = useState(null); // État pour afficher un popup
   const router = useRouter(); // Initialisation du router
 
   const handleRegister = async (e) => {
@@ -28,10 +28,11 @@ export default function Register() {
       localStorage.setItem('userId', data.user.id); // Stockage de l'ID de l'utilisateur
       localStorage.setItem('userEmail', data.user.email);
 
-      router.push('/customize'); // Redirection vers la page de personnalisation
+      setPopup({ type: 'success', message: 'Inscription réussie ! Redirection en cours...' });
+      setTimeout(() => router.push('/customize'), 1500); // Redirection vers la page de personnalisation
     } else {
       // Affiche le message d'erreur s'il y a une erreur
-      setMessage(data.message);
+      setPopup({ type: 'error', message: data.message });
     }
     setLoading(false); // Désactivation de l'état de chargement
   };
@@ -87,7 +88,18 @@ export default function Register() {
             {loading ? 'Envoi...' : "S'inscrire"}
           </button>
         </form>
+
         {message && <p className="message">{message}</p>}
+        
+        {popup && (
+          <div className={`popup ${popup.type}`}>
+            <p>{popup.message}</p>
+          </div>
+        )}
+
+        <div className="connect-message">
+          <p>J'ai déjà un compte. <a href="/login">Connectez-vous</a></p>
+        </div>
       </div>
 
       <style jsx>{`
@@ -179,6 +191,38 @@ export default function Register() {
           margin-top: 20px;
           font-size: 14px;
           color: #4a90e2;
+        }
+
+        .popup {
+          position: fixed;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          background-color: #28a745;
+          color: white;
+          padding: 10px;
+          border-radius: 5px;
+          box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+        }
+
+        .popup.error {
+          background-color: #dc3545;
+        }
+
+        .connect-message {
+          margin-top: 20px;
+          font-size: 14px;
+          color: #b0b0b0;
+        }
+
+        .connect-message a {
+          color: #4a90e2;
+          text-decoration: none;
+        }
+
+        .connect-message a:hover {
+          text-decoration: underline;
         }
       `}</style>
     </div>
