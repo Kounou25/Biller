@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabaseClient';
 
@@ -16,6 +16,14 @@ export default function CustomizeReceipt() {
   const [error, setError] = useState('');
   const router = useRouter();
 
+  useEffect(() => {
+    // Vérification de l'existence du userId dans le localStorage dès le montage du composant
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      router.push('/login');  // Redirection si aucun userId n'est trouvé
+    }
+  }, [router]);
+
   const handleLogoUpload = (event) => {
     const file = event.target.files[0];
     setLogo(file);
@@ -29,8 +37,8 @@ export default function CustomizeReceipt() {
 
     const userId = localStorage.getItem('userId');
     if (!userId) {
-      setError('Veuillez vous connecter pour continuer.');
-      setLoading(false);
+      // Si userId n'existe pas dans le localStorage, rediriger vers la page de connexion
+      router.push('/login');
       return;
     }
 
