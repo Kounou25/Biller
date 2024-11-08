@@ -78,7 +78,7 @@ export async function POST(req) {
     // Définir des styles
     doc.setFont("helvetica");
     doc.setFontSize(22);
-    doc.setTextColor(128, 0, 128); // Couleur du titre
+    doc.setTextColor(`${companyData.color}`); // Couleur du titre
     doc.text("Reçu", 15, 30);
 
     // Informations sur le client

@@ -113,7 +113,7 @@ export default function AbonnementForm() {
           </label>
 
           <label style={styles.label}>
-            Code :
+            Code d'envoi :
             <input
               type="text"
               value={code}
@@ -157,7 +157,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    color: '#007bff',
+    color: '#4caf50',
     fontSize: '16px',
     cursor: 'pointer',
     marginBottom: '20px',
@@ -212,7 +212,7 @@ const styles = {
   },
   button: {
     padding: '12px',
-    backgroundColor: '#007bff',
+    backgroundColor: '#4caf50',
     color: '#fff',
     border: 'none',
     borderRadius: '5px',

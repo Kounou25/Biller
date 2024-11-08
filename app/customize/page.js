@@ -226,7 +226,7 @@ const styles = {
     fontSize: '16px',
     fontWeight: '600',
     color: '#fff',
-    backgroundColor: '#0070f3',
+    backgroundColor: '#4caf50',
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',

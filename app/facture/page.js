@@ -1,7 +1,9 @@
 'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
   const [customer, setCustomer] = useState('');
   const [email, setEmail] = useState('');
   const [items, setItems] = useState([{ description: '', quantity: 1, price: 0 }]);
@@ -46,6 +48,10 @@ export default function Home() {
   return (
     <>
       <div className="form-container">
+        {/* Flèche de retour */}
+        <button onClick={() => router.back()} className="back-arrow">
+          ← Retour
+        </button>
         <h1>TIKITA PRO</h1>
         <form onSubmit={handleSubmit}>
           <input
@@ -115,7 +121,7 @@ export default function Home() {
       </div>
 
       <footer>
-        <p><strong>TIKITA PRO V1</strong></p>
+        <p><strong>TIKITA PRO 2.0</strong></p>
         <p>Créée avec ❤️ par <a href="https://wa.me/22788715276" target="_blank">Kounou Gilbert</a></p>
       </footer>
 
@@ -132,6 +138,18 @@ export default function Home() {
           font-family: 'Inter', sans-serif;
           color: black;
           position: relative;
+        }
+
+        .back-arrow {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          background: none;
+          border: none;
+          color: #4caf50;
+          font-size: 1.2rem;
+          cursor: pointer;
+          font-weight: bold;
         }
 
         h1 {
@@ -176,7 +194,7 @@ export default function Home() {
         }
 
         .submit-btn {
-          background-color: #2196f3;
+          background-color: #4caf50;
           color: white;
           border: none;
           font-size: 1.2rem;
