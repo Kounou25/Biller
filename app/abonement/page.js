@@ -16,7 +16,6 @@ export default function AbonnementForm() {
 
   // Simuler la récupération d'un abonnement actif (normalement, cela viendrait d'une API)
   useEffect(() => {
-    // Remplacez cette partie par votre logique d'API pour récupérer l'abonnement actif
     const abonnement = {
       montant: 5000,
       duree: 0,
@@ -25,12 +24,20 @@ export default function AbonnementForm() {
     setAbonnementActif(abonnement);
   }, []);
 
+  // Mettre à jour la durée automatiquement selon le montant sélectionné
+  useEffect(() => {
+    if (montant === "5000") {
+      setDuree("0"); // 1 mois pour 5000
+    } else if (montant === "39500") {
+      setDuree("1"); // 1 an pour 39500
+    }
+  }, [montant]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Début de l'animation de chargement
+    setLoading(true);
 
     const userId = localStorage.getItem('userId');
-
     const abonnementData = {
       montant: parseFloat(montant),
       duree: parseInt(duree),
@@ -47,14 +54,14 @@ export default function AbonnementForm() {
 
       if (response.ok) {
         setMessage({ text: 'Abonnement créé avec succès!', type: 'success' });
-        setTimeout(() => router.push('/home'), 1500); // Redirection après succès
+        setTimeout(() => router.push('/home'), 1500);
       } else {
         setMessage({ text: 'Erreur lors de la création de l’abonnement.', type: 'error' });
       }
     } catch (error) {
       setMessage({ text: 'Erreur lors de la communication avec le serveur.', type: 'error' });
     } finally {
-      setLoading(false); // Fin de l'animation de chargement
+      setLoading(false);
     }
   };
 
@@ -67,7 +74,6 @@ export default function AbonnementForm() {
       
       <h2 style={styles.title}>Souscrire à un abonnement</h2>
       
-      {/* Afficher les informations de l'abonnement actif si disponibles */}
       {abonnementActif && (
         <div style={styles.abonnementActif}>
           <h3 style={styles.abonnementTitle}>Abonnement Actif</h3>
@@ -125,7 +131,6 @@ export default function AbonnementForm() {
         </form>
       </div>
 
-      {/* Popup de message */}
       {message.text && (
         <div style={{ ...styles.popup, backgroundColor: message.type === 'success' ? '#28a745' : '#dc3545' }}>
           <p style={styles.popupText}>{message.text}</p>

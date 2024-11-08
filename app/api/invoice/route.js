@@ -73,7 +73,7 @@ export async function POST(req) {
     const logoBase64 = await loadImageAsBase64FromUrl(logoUrl);
 
     // Ajouter le logo en haut à droite
-    doc.addImage(logoBase64, 'PNG', 80, 10, 65, 40); // Ajuste la position et la taille du logo
+    doc.addImage(logoBase64, 'jpeg', 80, 10, 65, 40); // Ajuste la position et la taille du logo
 
     // Définir des styles
     doc.setFont("helvetica");

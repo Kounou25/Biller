@@ -14,12 +14,23 @@ export default function Dashboard() {
   const [totalRecette, setTotalRecette] = useState(0);
   const [totalQuantity, setTotalQantity] = useState(0);
   const [subscriptionStatus, setSubscriptionStatus] = useState('');
+  const router = useRouter();
 
-
+const logout =() =>{
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userEmail');
+      router.push('/login');
+    }
   useEffect(() => {
     // Récupérer les données côté client
     //recuperation d'id du user
     const userId = localStorage.getItem('userId');
+    if (!userId) {
+      router.push('/login');
+      return;
+    }
+
+    
 
     const fetchData = async () => {
       //recuperaation des donnees des recus
@@ -98,7 +109,7 @@ export default function Dashboard() {
             <li style={styles.navItem}><a href="/facture" style={styles.navLink}> <FontAwesomeIcon icon={faFileInvoice} style={{ marginRight: '8px' }} />Générer un Reçu</a></li>
             <li style={styles.navItem}><a href="#" style={styles.navLink}><FontAwesomeIcon icon={faReceipt} style={{ marginRight: '8px' }} />Mes Reçus</a></li>
             <li style={styles.navItem}><a href="/abonement" style={styles.navLink}><FontAwesomeIcon icon={faCog} style={{ marginRight: '8px' }} />Abonnement</a></li>
-            <li style={styles.navItem}><a href="#" style={styles.logoutButton}> <FontAwesomeIcon icon={faSignOutAlt} style={{ marginRight: '8px' }} />Déconnexion</a></li>
+            <li style={styles.navItem}><a href="#" style={styles.logoutButton} onClick={logout}> <FontAwesomeIcon icon={faSignOutAlt} style={{ marginRight: '8px' }} />Déconnexion</a></li>
           </ul>
          
         </nav>
