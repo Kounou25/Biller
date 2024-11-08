@@ -56,7 +56,7 @@ export default function AbonnementForm() {
         setMessage({ text: 'Abonnement créé avec succès!', type: 'success' });
         setTimeout(() => router.push('/home'), 1500);
       } else {
-        setMessage({ text: 'Erreur lors de la création de l’abonnement.', type: 'error' });
+        setMessage({ text: 'Erreur lors de la création de l&apos;abonnement.', type: 'error' });
       }
     } catch (error) {
       setMessage({ text: 'Erreur lors de la communication avec le serveur.', type: 'error' });
@@ -69,7 +69,7 @@ export default function AbonnementForm() {
     <div style={styles.container}>
       <div style={styles.backButton} onClick={() => router.push('/home')}>
         <FontAwesomeIcon icon={faArrowLeft} style={{ marginRight: '8px' }} />
-        Retour à l'accueil
+        Retour à l&apos;accueil
       </div>
       
       <h2 style={styles.title}>Souscrire à un abonnement</h2>
@@ -113,7 +113,7 @@ export default function AbonnementForm() {
           </label>
 
           <label style={styles.label}>
-            Code d'envoi :
+            Code d&apos;envoi :
             <input
               type="text"
               value={code}
@@ -139,7 +139,6 @@ export default function AbonnementForm() {
     </div>
   );
 }
-
 const styles = {
   container: {
     display: 'flex',
