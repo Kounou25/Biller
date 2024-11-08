@@ -166,7 +166,7 @@ export default function Register() {
         }
 
         .form button {
-          background-color: #4a90e2;
+          background-color: #4caf50;
           color: #ffffff;
           border: none;
           border-radius: 5px;
@@ -217,7 +217,7 @@ export default function Register() {
         }
 
         .connect-message a {
-          color: #4a90e2;
+          color: #4caf50;
           text-decoration: none;
         }
 
