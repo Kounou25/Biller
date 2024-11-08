@@ -32,7 +32,7 @@ export default function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.2 }}
       >
-       Avec Tikita, créez instantanément des reçus personnalisés en toute simplicité ! Conçue pour les vendeurs en ligne et les auto-entrepreneurs du secteur informel, Tikita vous permet de générer vos reçus en un clin d'œil, de manière rapide, intuitive et 100 % personnalisable."
+       Avec Tikita, créez instantanément des reçus personnalisés en toute simplicité ! Conçue pour les vendeurs en ligne et les auto-entrepreneurs, Tikita vous permet de générer vos reçus en un clin d'œil, de manière rapide, intuitive et 100 % personnalisable."
       </motion.p>
       
       <motion.div 
