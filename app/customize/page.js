@@ -1,6 +1,6 @@
 "use client";
 
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabaseClient';
 
@@ -17,16 +17,19 @@ export default function CustomizeReceipt() {
   const router = useRouter();
 
   useEffect(() => {
-    // Vérification de l'existence du userId dans le localStorage dès le montage du composant
     const userId = localStorage.getItem('userId');
     if (!userId) {
-      router.push('/login');  // Redirection si aucun userId n'est trouvé
+      router.push('/login');
     }
   }, [router]);
 
   const handleLogoUpload = (event) => {
     const file = event.target.files[0];
-    setLogo(file);
+    if (file && file.type === "image/jpeg") {
+      setLogo(file);
+    } else {
+      setError("Le format du fichier doit être .jpeg");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -37,15 +40,11 @@ export default function CustomizeReceipt() {
 
     const userId = localStorage.getItem('userId');
     if (!userId) {
-      // Si userId n'existe pas dans le localStorage, rediriger vers la page de connexion
       router.push('/login');
       return;
     }
 
-    console.log('Données à insérer :', { cmpName, cmpTel, adresse, slogan, color, userId });
-
     try {
-      // Insertion des informations de l'entreprise
       const { data: companyData, error: companyError } = await supabase
         .from('company')
         .insert([
@@ -55,29 +54,25 @@ export default function CustomizeReceipt() {
             adresse,
             slogan,
             color,
-            iduser: parseInt(userId), // ID de l'utilisateur comme clé étrangère
+            iduser: parseInt(userId),
           },
         ])
         .select();
 
-      if (companyError) {
-        throw companyError;
-      }
+      if (companyError) throw companyError;
+
       const companyId = companyData[0].idcmp;
 
-      // Upload du logo
       if (logo) {
         const { data: logoData, error: logoError } = await supabase
           .storage
           .from('logos')
           .upload(`company-logos/${logo.name}`, logo);
 
-        if (logoError) {
-          throw logoError;
-        }
+        if (logoError) throw logoError;
+
         const logoUrl = logoData.path;
 
-        // Insertion des informations du logo avec l'ID de l'utilisateur
         const { error: logoInsertError } = await supabase
           .from('logos')
           .insert([
@@ -87,15 +82,12 @@ export default function CustomizeReceipt() {
             },
           ]);
 
-        if (logoInsertError) {
-          throw logoInsertError;
-        }
+        if (logoInsertError) throw logoInsertError;
       }
 
       setMessage('Informations enregistrées avec succès !');
       setTimeout(() => router.push('/home'), 2000);
     } catch (error) {
-      console.error('Erreur lors de l\'enregistrement :', error);
       setError('Erreur lors de l\'enregistrement des informations : ' + error.message);
     } finally {
       setLoading(false);
@@ -142,7 +134,7 @@ export default function CustomizeReceipt() {
             style={styles.input}
           />
 
-          <label style={styles.label}>Color :</label>
+          <label style={styles.label}>Couleur :</label>
           <input
             type="color"
             value={color}
@@ -153,9 +145,11 @@ export default function CustomizeReceipt() {
           <label style={styles.label}>Logo :</label>
           <input
             type="file"
+            accept=".jpeg"
             onChange={handleLogoUpload}
             style={styles.fileInput}
           />
+          <small style={styles.note}>Format pris en charge : .jpeg</small>
 
           <button type="submit" style={loading ? styles.loadingButton : styles.button}>
             {loading ? <div style={styles.loader}></div> : "Enregistrer"}
@@ -168,8 +162,6 @@ export default function CustomizeReceipt() {
     </div>
   );
 }
-
-// Styles ici...
 
 const styles = {
   container: {
@@ -188,6 +180,7 @@ const styles = {
     borderRadius: '8px',
     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
     textAlign: 'center',
+    margin: '10px',
   },
   title: {
     fontSize: '24px',
@@ -221,6 +214,12 @@ const styles = {
     fontSize: '16px',
     color: '#bbb',
   },
+  note: {
+    color: '#bbb',
+    fontSize: '14px',
+    textAlign: 'left',
+    marginTop: '-10px',
+  },
   button: {
     padding: '12px',
     fontSize: '16px',
@@ -253,10 +252,6 @@ const styles = {
     height: '18px',
     animation: 'spin 1s linear infinite',
   },
-  '@keyframes spin': {
-    '0%': { transform: 'rotate(0deg)' },
-    '100%': { transform: 'rotate(360deg)' },
-  },
   popup: {
     backgroundColor: '#4CAF50',
     color: 'white',
@@ -274,5 +269,16 @@ const styles = {
     marginTop: '10px',
     textAlign: 'center',
     fontWeight: 'bold',
+  },
+  '@media (max-width: 600px)': {
+    card: {
+      padding: '20px',
+    },
+    title: {
+      fontSize: '20px',
+    },
+    button: {
+      fontSize: '14px',
+    },
   },
 };
