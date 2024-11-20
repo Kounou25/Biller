@@ -14,6 +14,26 @@ export default function Register() {
   const [popup, setPopup] = useState(null); // État pour afficher un popup
   const router = useRouter(); // Initialisation du router
 
+  // Liste des pays et indicatifs
+  const paysList = [
+    { nom: 'Niger', indicatif: '+227' },
+    { nom: 'Sénégal', indicatif: '+221' },
+    { nom: 'Côte d\'Ivoire', indicatif: '+225' },
+    { nom: 'Mali', indicatif: '+223' },
+    { nom: 'Burkina Faso', indicatif: '+226' },
+    { nom: 'Ghana', indicatif: '+233' },
+    { nom: 'Nigeria', indicatif: '+234' },
+    { nom: 'Togo', indicatif: '+228' },
+    { nom: 'Bénin', indicatif: '+229' },
+    { nom: 'Cameroun', indicatif: '+237' },
+  ];
+
+  const handleCountryChange = (e) => {
+    const selectedCountry = paysList.find((p) => p.nom === e.target.value);
+    setPays(selectedCountry.nom);
+    setTel(selectedCountry.indicatif); // Mise à jour de l'indicatif téléphonique
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true); // Activation de l'état de chargement
@@ -44,7 +64,7 @@ export default function Register() {
         <form onSubmit={handleRegister} className="form">
           <input
             type="text"
-            placeholder="Nom"
+            placeholder="Nom complet"
             value={nom}
             onChange={(e) => setNom(e.target.value)}
             required
@@ -56,13 +76,18 @@ export default function Register() {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <input
-            type="text"
-            placeholder="Pays"
-            value={pays}
-            onChange={(e) => setPays(e.target.value)}
-            required
-          />
+          <select 
+  value={pays} 
+  onChange={handleCountryChange} 
+  required 
+  className="styled-select">
+  <option value="">Sélectionnez un pays</option>
+  {paysList.map((pays) => (
+    <option key={pays.nom} value={pays.nom}>
+      {pays.nom}
+    </option>
+  ))}
+</select>
           <input
             type="tel"
             placeholder="Téléphone"
@@ -80,6 +105,7 @@ export default function Register() {
           <input
             type="password"
             placeholder="Mot de passe"
+            minLength={8}
             value={mbp}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -150,6 +176,32 @@ export default function Register() {
           flex-direction: column;
           width: 100%;
         }
+
+        .styled-select {
+    background-color: #3c3c3c;
+    border: none;
+    border-radius: 5px;
+    padding: 12px;
+    margin: 8px 0;
+    color: #ffffff;
+    font-size: 16px;
+    appearance: none; /* Supprime l'apparence par défaut du navigateur */
+    cursor: pointer;
+  }
+
+  .styled-select::placeholder {
+    color: #b0b0b0;
+  }
+
+  .styled-select option {
+    background-color: #2b2b2b;
+    color: #ffffff;
+  }
+
+  .styled-select:focus {
+    outline: 2px solid #4caf50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+  }
 
         .form input {
           background-color: #3c3c3c;
