@@ -32,9 +32,18 @@ export async function POST(req) {
     .select(); // Ajout de .select() pour récupérer les données insérées
 
   if (error) {
-    return new Response(JSON.stringify({ message: error.message }), { 
-      status: 500,
-    });
+
+    if (error.message=='duplicate key value violates unique constraint "users_tel_key"') {
+      return new Response(JSON.stringify({ message: "Désolé ! ce numéro de téléphone est deja utiliser !" }), { 
+        status: 500,
+      });
+      
+    }else if(error.message=='duplicate key value violates unique constraint "users_email_key"'){
+      return new Response(JSON.stringify({ message: "Désolé ! cet adresse email est deja utiliser !" }), { 
+        status: 500,
+      });
+    }
+
   }
 
   // Récupération de l'ID de l'utilisateur inséré
