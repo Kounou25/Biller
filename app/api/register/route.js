@@ -3,18 +3,30 @@ import { supabase } from '../../../lib/supabaseClient';
 import bcrypt from 'bcrypt';
 
 export async function POST(req) {
-  const { nom, email, pays, tel, company, mbp } = await req.json();
+  const { nom, email, pays, tel, company, mbp, mbpverify } = await req.json();
 
   // Vérification des champs
-  if (!nom || !email || !pays || !tel || !company || !mbp) {
+  if (!nom || !email || !pays || !tel || !company || !mbp || !mbpverify) {
     return new Response(
       JSON.stringify({ message: 'Tous les champs sont requis.' }),
       { status: 400 }
     );
   }
+   let hashedPassword=null;
+  //verification de la compatibilite des deux champs de mot de passe
 
-  // Cryptage du mot de passe
-  const hashedPassword = await bcrypt.hash(mbp, 10);
+  if (mbp != mbpverify) {
+    return new Response(
+      JSON.stringify({ message: 'les deux mots de passe sont differents' }),
+      { status: 500 }
+    );    
+    
+  }else{
+      // Cryptage du mot de passe
+   hashedPassword = await bcrypt.hash(mbp, 10);
+  }
+
+
 
   // Insertion de l'utilisateur dans la base de données
   const { data, error } = await supabase
