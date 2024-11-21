@@ -112,6 +112,7 @@ export default function CustomizeReceipt() {
           <input
             type="text"
             value={cmpTel}
+            minLength={8}
             onChange={(e) => setCmpTel(e.target.value)}
             required
             style={styles.input}
@@ -145,7 +146,7 @@ export default function CustomizeReceipt() {
           <label style={styles.label}>Logo :</label>
           <input
             type="file"
-            accept=".jpeg"
+            accept=".jpeg,.png"
             onChange={handleLogoUpload}
             style={styles.fileInput}
           />
