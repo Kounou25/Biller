@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // Importation du router
+import {paysList} from '../../app/staticData/countries.js';
 
 export default function Register() {
   const [nom, setNom] = useState('');
@@ -8,6 +9,8 @@ export default function Register() {
   const [pays, setPays] = useState('');
   const [tel, setTel] = useState('');
   const [mbp, setPassword] = useState('');
+  const [mbpverify, setPasswordVerify] = useState('');
+
   const [company, setCompany] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false); // État pour le chargement
@@ -15,23 +18,12 @@ export default function Register() {
   const router = useRouter(); // Initialisation du router
 
   // Liste des pays et indicatifs
-  const paysList = [
-    { nom: 'Niger', indicatif: '+227' },
-    { nom: 'Sénégal', indicatif: '+221' },
-    { nom: 'Côte d\'Ivoire', indicatif: '+225' },
-    { nom: 'Mali', indicatif: '+223' },
-    { nom: 'Burkina Faso', indicatif: '+226' },
-    { nom: 'Ghana', indicatif: '+233' },
-    { nom: 'Nigeria', indicatif: '+234' },
-    { nom: 'Togo', indicatif: '+228' },
-    { nom: 'Bénin', indicatif: '+229' },
-    { nom: 'Cameroun', indicatif: '+237' },
-  ];
+  
 
   const handleCountryChange = (e) => {
     const selectedCountry = paysList.find((p) => p.nom === e.target.value);
     setPays(selectedCountry.nom);
-    setTel(selectedCountry.indicatif); // Mise à jour de l'indicatif téléphonique
+    setTel(`${selectedCountry.indicatif} `); // Mise à jour de l'indicatif téléphonique
   };
 
   const handleRegister = async (e) => {
@@ -40,7 +32,7 @@ export default function Register() {
     const response = await fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nom, email, pays, tel, company, mbp }),
+      body: JSON.stringify({ nom, email, pays, tel, company, mbp, mbpverify }),
     });
 
     const data = await response.json();
@@ -110,6 +102,16 @@ export default function Register() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+
+          <input
+            type="password"
+            placeholder="resaisir le mot de passe"
+            minLength={8}
+            value={mbpverify}
+            onChange={(e) => setPasswordVerify(e.target.value)}
+            required
+          />
+
           <button type="submit" disabled={loading} className={loading ? 'loading' : ''}>
             {loading ? 'Verification...' : "S'inscrire"}
           </button>
