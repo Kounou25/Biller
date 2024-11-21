@@ -111,7 +111,7 @@ export default function Register() {
             required
           />
           <button type="submit" disabled={loading} className={loading ? 'loading' : ''}>
-            {loading ? 'Envoi...' : "S'inscrire"}
+            {loading ? 'Verification...' : "S'inscrire"}
           </button>
         </form>
 
