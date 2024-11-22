@@ -20,7 +20,7 @@ export default function Home() {
       const response = await fetch('/api/invoice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customer, email, items, userId })
+        body: JSON.stringify({ customer, email, items, userId }),
       });
 
       const blob = await response.blob();
@@ -37,218 +37,132 @@ export default function Home() {
       setPopupType('error');
     } finally {
       setIsLoading(false);
-      setTimeout(() => setPopupMessage(''), 3000); // Cache le popup après 3 secondes
+      setTimeout(() => setPopupMessage(''), 3000);
     }
   };
 
   const addItem = () => {
-    setItems([...items, { description: '', quantity: null, price: 0 }]);
+    setItems([...items, { description: '', quantity: 1, price: 0 }]);
   };
 
   return (
     <>
-      <div className="form-container">
+      <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center py-6 px-4">
         {/* Flèche de retour */}
-        <button onClick={() => router.back()} className="back-arrow">
+        <button
+          onClick={() => router.back()}
+          className="absolute top-6 left-6 text-gray-300 hover:text-gray-100 text-lg flex items-center"
+        >
           ← Retour
         </button>
-        <h1>TIKITA PRO</h1>
-        <form onSubmit={handleSubmit}>
+
+        <h1 className="text-4xl font-extrabold mb-6">TIKITA PRO</h1>
+
+        <form
+          onSubmit={handleSubmit}
+          className="w-full max-w-2xl bg-gray-800 p-6 rounded-lg shadow-lg space-y-4"
+        >
           <input
             type="text"
             placeholder="Nom du client"
             value={customer}
             onChange={(e) => setCustomer(e.target.value)}
             required
+            className="w-full bg-gray-700 text-white rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             type="number"
-            placeholder="Numero de telephone"
+            placeholder="Numéro de téléphone"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="w-full bg-gray-700 text-white rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           {items.map((item, index) => (
-            <div className="item" key={index}>
+            <div key={index} className="flex flex-col sm:flex-row gap-4">
               <input
                 type="text"
-                placeholder=" description"
+                placeholder="Description"
                 value={item.description}
                 onChange={(e) => {
                   const newItems = [...items];
                   newItems[index].description = e.target.value;
                   setItems(newItems);
                 }}
+                className="flex-1 bg-gray-700 text-white rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
                 type="number"
-                placeholder="Quantite"
-                value={item.quantity || ""}
+                placeholder="Quantité"
+                value={item.quantity || ''}
                 onChange={(e) => {
                   const newItems = [...items];
                   newItems[index].quantity = e.target.value;
                   setItems(newItems);
                 }}
+                className="flex-1 bg-gray-700 text-white rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
                 type="number"
-                placeholder=" prix"
-                value={item.price || ""}
+                placeholder="Prix"
+                value={item.price || ''}
                 onChange={(e) => {
                   const newItems = [...items];
                   newItems[index].price = e.target.value;
                   setItems(newItems);
                 }}
+                className="flex-1 bg-gray-700 text-white rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           ))}
 
-          <button className="add-item-btn" type="button" onClick={addItem}>
-            ajouter a la facture
+          <button
+            type="button"
+            onClick={addItem}
+            className="w-full bg-yellow-500 text-black font-bold py-3 rounded-lg hover:bg-yellow-400 transition"
+          >
+            Ajouter à la facture
           </button>
-          <button className="submit-btn" type="submit" disabled={isLoading}>
-            {isLoading ? 'Chargement...' : 'Generer le recu'}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className={`w-full font-bold py-3 rounded-lg transition ${
+              isLoading
+                ? 'bg-gray-600 cursor-not-allowed'
+                : 'bg-green-500 hover:bg-green-400'
+            }`}
+          >
+            {isLoading ? 'Chargement...' : 'Générer le reçu'}
           </button>
         </form>
 
-        {/* Popup de message */}
         {popupMessage && (
-          <div className={`popup ${popupType}`}>
+          <div
+            className={`fixed top-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg text-white font-bold shadow-lg ${
+              popupType === 'success' ? 'bg-green-500' : 'bg-red-500'
+            }`}
+          >
             {popupMessage}
           </div>
         )}
+
+        <footer className="mt-6 text-center">
+          <p>
+            <strong>TIKITA PRO 2.0</strong>
+          </p>
+          <p>
+            Créée avec ❤️ par{' '}
+            <a
+              href="https://wa.me/22788715276"
+              target="_blank"
+              className="text-blue-400 hover:text-blue-300 underline"
+            >
+              Kounou Gilbert
+            </a>
+          </p>
+        </footer>
       </div>
-
-      <footer>
-        <p><strong>TIKITA PRO 2.0</strong></p>
-        <p>Créée avec ❤️ par <a href="https://wa.me/22788715276" target="_blank">Kounou Gilbert</a></p>
-      </footer>
-
-      <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-
-        .form-container {
-          max-width: 600px;
-          margin: 60px auto;
-          padding: 30px;
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-          font-family: 'Inter', sans-serif;
-          color: black;
-          position: relative;
-        }
-
-        .back-arrow {
-          position: absolute;
-          top: 20px;
-          left: 20px;
-          background: none;
-          border: none;
-          color: #4caf50;
-          font-size: 1.2rem;
-          cursor: pointer;
-          font-weight: bold;
-        }
-
-        h1 {
-          text-align: center;
-          font-size: 2.2rem;
-          margin-bottom: 1.5rem;
-          font-weight: 600;
-        }
-
-        input, .add-item-btn, .submit-btn {
-          width: 100%;
-          padding: 14px;
-          margin-bottom: 20px;
-          border-radius: 8px;
-          font-size: 1rem;
-          background: rgba(0, 0, 0, 0.05);
-          color: black;
-          border: 1px solid #ccc;
-          transition: background 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        input:focus {
-          background: rgba(0, 0, 0, 0.1);
-          box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-          outline: none;
-        }
-
-        .item {
-          display: flex;
-          gap: 15px;
-        }
-
-        .item input {
-          flex: 1;
-        }
-
-        .add-item-btn {
-          background-color: #ff9800;
-          color: white;
-          border: none;
-          cursor: pointer;
-        }
-
-        .submit-btn {
-          background-color: #4caf50;
-          color: white;
-          border: none;
-          font-size: 1.2rem;
-          cursor: pointer;
-        }
-
-        .popup {
-          position: absolute;
-          top: 20px;
-          left: 50%;
-          transform: translateX(-50%);
-          padding: 15px 20px;
-          border-radius: 8px;
-          color: white;
-          font-weight: 600;
-          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-          animation: fadeInOut 3s ease;
-        }
-
-        .popup.success {
-          background-color: #4caf50;
-        }
-
-        .popup.error {
-          background-color: #f44336;
-        }
-
-        @keyframes fadeInOut {
-          0%, 100% { opacity: 0; }
-          10%, 90% { opacity: 1; }
-        }
-
-        footer {
-          text-align: center;
-          padding: 20px;
-          color: white;
-          margin-top: 40px;
-        }
-
-        footer p {
-          margin: 0;
-        }
-
-        footer a {
-          color: #2196f3;
-          text-decoration: none;
-        }
-
-        @media (max-width: 600px) {
-          .item {
-            flex-direction: column;
-          }
-        }
-      `}</style>
     </>
   );
 }
