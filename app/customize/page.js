@@ -1,31 +1,31 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '../../lib/supabaseClient';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "../../lib/supabaseClient";
 
 export default function CustomizeReceipt() {
-  const [cmpName, setCmpName] = useState('');
-  const [cmpTel, setCmpTel] = useState('');
-  const [adresse, setAdresse] = useState('');
-  const [slogan, setSlogan] = useState('');
-  let [color, setColor] = useState('');
+  const [cmpName, setCmpName] = useState("");
+  const [cmpTel, setCmpTel] = useState("");
+  const [adresse, setAdresse] = useState("");
+  const [slogan, setSlogan] = useState("");
+  let [color, setColor] = useState("#690202"); // Initialiser avec une couleur par défaut
   const [logo, setLogo] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem("userId");
     if (!userId) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [router]);
 
   const handleLogoUpload = (event) => {
     const file = event.target.files[0];
-    if (file && file.type === "image/jpeg" || file.type === "image/png") {
+    if (file && (file.type === "image/jpeg" || file.type === "image/png")) {
       setLogo(file);
     } else {
       setError("Le format du fichier doit être .jpeg");
@@ -35,22 +35,18 @@ export default function CustomizeReceipt() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
-    setError('');
+    setMessage("");
+    setError("");
 
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem("userId");
     if (!userId) {
-      router.push('/login');
+      router.push("/login");
       return;
-    }
-
-    if (color=='') {
-      color = '#690202'
     }
 
     try {
       const { data: companyData, error: companyError } = await supabase
-        .from('company')
+        .from("company")
         .insert([
           {
             cmpName,
@@ -66,19 +62,18 @@ export default function CustomizeReceipt() {
       if (companyError) throw companyError;
 
       const companyId = companyData[0].idcmp;
-        let logoUrl='';
+      let logoUrl = "";
       if (logo) {
-        const { data: logoData, error: logoError } = await supabase
-          .storage
-          .from('logos')
+        const { data: logoData, error: logoError } = await supabase.storage
+          .from("logos")
           .upload(`company-logos/${logo.name}`, logo);
 
         if (logoError) throw logoError;
 
-        let logoUrl = logoData.path;
-        //insertion de l'image dans la base de donnee
+        logoUrl = logoData.path;
+
         const { error: logoInsertError } = await supabase
-          .from('logos')
+          .from("logos")
           .insert([
             {
               url: logoUrl,
@@ -87,13 +82,11 @@ export default function CustomizeReceipt() {
           ]);
 
         if (logoInsertError) throw logoInsertError;
+      } else if (!logo) {
+        logoUrl = "company-logos/default.jpg";
 
-       //verification si le champs logo est vide, on lui assigne l'url par defaut
-      }else if(!logo){
-        logoUrl = 'company-logos/default.jpg';
-      
         const { error: logoInsertError } = await supabase
-          .from('logos')
+          .from("logos")
           .insert([
             {
               url: logoUrl,
@@ -102,212 +95,131 @@ export default function CustomizeReceipt() {
           ]);
 
         if (logoInsertError) throw logoInsertError;
-        }
-      setMessage('Informations enregistrées avec succès !');
-      setTimeout(() => router.push('/home'), 2000);
-    } catch (error) {
-      //conditions pour avoir des messages d'erreurs clairs
-
-      if (error.message == 'duplicate key value violates unique constraint "company_cmptel_key"') {
-        const sms = 'ce numero est déja utiliser !'
-        setError("Erreur lors de l'enregistrement des informations :" + sms);
-        
-      }else{
-        setError("Erreur lors de l'enregistrement des informations " +error.message);
       }
-
+      setMessage("Informations enregistrées avec succès !");
+      setTimeout(() => router.push("/home"), 2000);
+    } catch (error) {
+      if (
+        error.message ==
+        'duplicate key value violates unique constraint "company_cmptel_key"'
+      ) {
+        const sms = "Ce numéro est déjà utilisé !";
+        setError("Erreur lors de l'enregistrement des informations :" + sms);
+      } else {
+        setError(
+          "Erreur lors de l'enregistrement des informations " + error.message
+        );
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>Personnalisez votre reçu</h1>
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <label style={styles.label}>Nom de l'entreprise :</label>
-          <input
-            type="text"
-            value={cmpName}
-            onChange={(e) => setCmpName(e.target.value)}
-            required
-            style={styles.input}
-          />
+    <div className="min-h-screen bg-gradient-to-t from-gray-800 to-black flex items-center justify-center">
+      <div className="bg-gray-900 w-full max-w-md p-8 rounded-lg shadow-lg">
+        <h1 className="text-2xl font-semibold text-center text-white mb-6">
+          Personnalisez votre reçu
+        </h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Nom de l'entreprise
+            </label>
+            <input
+              type="text"
+              value={cmpName}
+              onChange={(e) => setCmpName(e.target.value)}
+              required
+              className="w-full px-4 py-2 border border-gray-700 rounded-md focus:ring-2 focus:ring-green-600 focus:outline-none text-white bg-gray-800"
+            />
+          </div>
 
-          <label style={styles.label}>Numéro de l'entreprise :</label>
-          <input
-            type="text"
-            value={cmpTel}
-            minLength={8}
-            onChange={(e) => setCmpTel(e.target.value)}
-            required
-            style={styles.input}
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Numéro de téléphone
+            </label>
+            <input
+              type="text"
+              value={cmpTel}
+              minLength={8}
+              onChange={(e) => setCmpTel(e.target.value)}
+              required
+              className="w-full px-4 py-2 border border-gray-700 rounded-md focus:ring-2 focus:ring-green-600 focus:outline-none text-white bg-gray-800"
+            />
+          </div>
 
-          <label style={styles.label}>Adresse :</label>
-          <input
-            type="text"
-            value={adresse}
-            onChange={(e) => setAdresse(e.target.value)}
-            required
-            style={styles.input}
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Adresse
+            </label>
+            <input
+              type="text"
+              value={adresse}
+              onChange={(e) => setAdresse(e.target.value)}
+              required
+              className="w-full px-4 py-2 border border-gray-700 rounded-md focus:ring-2 focus:ring-green-600 focus:outline-none text-white bg-gray-800"
+            />
+          </div>
 
-          <label style={styles.label}>Slogan :</label>
-          <input
-            type="text"
-            value={slogan}
-            onChange={(e) => setSlogan(e.target.value)}
-            style={styles.input}
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Slogan (facultatif)
+            </label>
+            <input
+              type="text"
+              value={slogan}
+              onChange={(e) => setSlogan(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-700 rounded-md focus:ring-2 focus:ring-green-600 focus:outline-none text-white bg-gray-800"
+            />
+          </div>
 
-          <label style={styles.label}>Couleur :</label>
-          <input
-            type="color"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-            style={{ ...styles.input, backgroundColor: color }}
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Couleur principale
+            </label>
+            <div className="flex items-center space-x-3">
+              <input
+                type="color"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                className="w-full py-2 border border-gray-700 rounded-md focus:ring-2 focus:ring-green-600 text-white bg-gray-800"
+              />
+              <div
+                className="w-8 h-8 border rounded-full"
+                style={{ backgroundColor: color }}
+              ></div>
+            </div>
+          </div>
 
-          <label style={styles.label}>Logo :</label>
-          <input
-            type="file"
-            accept=".jpeg,.png,.jpg"
-            onChange={handleLogoUpload}
-            style={styles.fileInput}
-          />
-          <small style={styles.note}>Format pris en charge : .jpeg</small>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Logo (facultatif)
+            </label>
+            <input
+              type="file"
+              accept=".jpeg,.png,.jpg"
+              onChange={handleLogoUpload}
+              className="w-full text-gray-500"
+            />
+          </div>
 
-          <button type="submit" style={loading ? styles.loadingButton : styles.button}>
-            {loading ? <div style={styles.loader}></div> : "Enregistrer"}
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-2 text-white rounded-md ${
+              loading ? "bg-gray-600" : "bg-green-600 hover:bg-green-500"
+            }`}
+          >
+            {loading ? "Chargement..." : "Enregistrer"}
           </button>
         </form>
 
-        {message && <div style={styles.popup} className="popup">{message}</div>}
-        {error && <div style={styles.errorPopup} className="popup">{error}</div>}
+        {message && (
+          <div className="mt-4 text-green-600 text-center">{message}</div>
+        )}
+        {error && <div className="mt-4 text-red-600 text-center">{error}</div>}
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '100vh',
-    backgroundColor: '#121212',
-    padding: '20px',
-  },
-  card: {
-    maxWidth: '500px',
-    width: '100%',
-    backgroundColor: '#1e1e1e',
-    padding: '40px',
-    borderRadius: '8px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-    textAlign: 'center',
-    margin: '10px',
-  },
-  title: {
-    fontSize: '24px',
-    fontWeight: '600',
-    color: '#fff',
-    marginBottom: '20px',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-  },
-  label: {
-    textAlign: 'left',
-    fontSize: '16px',
-    color: '#bbb',
-    fontWeight: '500',
-    marginBottom: '5px',
-  },
-  input: {
-    padding: '10px',
-    fontSize: '16px',
-    border: '1px solid #333',
-    borderRadius: '4px',
-    width: '100%',
-    boxSizing: 'border-box',
-    backgroundColor: '#2b2b2b',
-    color: '#fff',
-  },
-  fileInput: {
-    fontSize: '16px',
-    color: '#bbb',
-  },
-  note: {
-    color: '#bbb',
-    fontSize: '14px',
-    textAlign: 'left',
-    marginTop: '-10px',
-  },
-  button: {
-    padding: '12px',
-    fontSize: '16px',
-    fontWeight: '600',
-    color: '#fff',
-    backgroundColor: '#4caf50',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s',
-  },
-  loadingButton: {
-    padding: '12px',
-    fontSize: '16px',
-    fontWeight: '600',
-    color: '#fff',
-    backgroundColor: '#005bb5',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'not-allowed',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loader: {
-    border: '4px solid #0070f3',
-    borderTop: '4px solid transparent',
-    borderRadius: '50%',
-    width: '18px',
-    height: '18px',
-    animation: 'spin 1s linear infinite',
-  },
-  popup: {
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    padding: '10px',
-    borderRadius: '5px',
-    marginTop: '10px',
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  errorPopup: {
-    backgroundColor: '#f44336',
-    color: 'white',
-    padding: '10px',
-    borderRadius: '5px',
-    marginTop: '10px',
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  '@media (max-width: 600px)': {
-    card: {
-      padding: '20px',
-    },
-    title: {
-      fontSize: '20px',
-    },
-    button: {
-      fontSize: '14px',
-    },
-  },
-};
- 
