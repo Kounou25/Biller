@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // Importation du router
-import {paysList} from '../../app/staticData/countries.js';
+import { paysList } from '../../app/staticData/countries.js';
 
 export default function Register() {
   const [nom, setNom] = useState('');
@@ -10,15 +10,11 @@ export default function Register() {
   const [tel, setTel] = useState('');
   const [mbp, setPassword] = useState('');
   const [mbpverify, setPasswordVerify] = useState('');
-
   const [company, setCompany] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false); // État pour le chargement
   const [popup, setPopup] = useState(null); // État pour afficher un popup
   const router = useRouter(); // Initialisation du router
-
-  // Liste des pays et indicatifs
-  
 
   const handleCountryChange = (e) => {
     const selectedCountry = paysList.find((p) => p.nom === e.target.value);
@@ -39,27 +35,26 @@ export default function Register() {
     if (response.ok) {
       localStorage.setItem('userId', data.user.id); // Stockage de l'ID de l'utilisateur
       localStorage.setItem('userEmail', data.user.email);
-
       setPopup({ type: 'success', message: 'Inscription réussie ! Redirection en cours...' });
       setTimeout(() => router.push('/customize'), 1500); // Redirection vers la page de personnalisation
     } else {
-      // Affiche le message d'erreur s'il y a une erreur
       setPopup({ type: 'error', message: data.message });
     }
     setLoading(false); // Désactivation de l'état de chargement
   };
 
   return (
-    <div className="container">
-      <div className="form-wrapper">
-        <h2>Inscription</h2>
-        <form onSubmit={handleRegister} className="form">
+    <div className="min-h-screen bg-gray-900 flex justify-center items-center">
+      <div className="w-full max-w-md p-8 bg-gray-800 bg-opacity-90 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-semibold text-white mb-6">Inscription</h2>
+        <form onSubmit={handleRegister} className="space-y-4">
           <input
             type="text"
             placeholder="Nom complet"
             value={nom}
             onChange={(e) => setNom(e.target.value)}
             required
+            className="w-full p-3 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
           <input
             type="email"
@@ -67,25 +62,28 @@ export default function Register() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="w-full p-3 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
-          <select 
-  value={pays} 
-  onChange={handleCountryChange} 
-  required 
-  className="styled-select">
-  <option value="">Sélectionnez un pays</option>
-  {paysList.map((pays) => (
-    <option key={pays.nom} value={pays.nom}>
-      {pays.nom}
-    </option>
-  ))}
-</select>
+          <select
+            value={pays}
+            onChange={handleCountryChange}
+            required
+            className="w-full p-3 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            <option value="">Sélectionnez un pays</option>
+            {paysList.map((pays) => (
+              <option key={pays.nom} value={pays.nom}>
+                {pays.nom}
+              </option>
+            ))}
+          </select>
           <input
             type="tel"
             placeholder="Téléphone"
             value={tel}
             onChange={(e) => setTel(e.target.value)}
             required
+            className="w-full p-3 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
           <input
             type="text"
@@ -93,6 +91,7 @@ export default function Register() {
             value={company}
             onChange={(e) => setCompany(e.target.value)}
             required
+            className="w-full p-3 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
           <input
             type="password"
@@ -101,184 +100,45 @@ export default function Register() {
             value={mbp}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="w-full p-3 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
-
           <input
             type="password"
-            placeholder="resaisir le mot de passe"
+            placeholder="Resaisir le mot de passe"
             minLength={8}
             value={mbpverify}
             onChange={(e) => setPasswordVerify(e.target.value)}
             required
+            className="w-full p-3 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
-
-          <button type="submit" disabled={loading} className={loading ? 'loading' : ''}>
-            {loading ? 'Verification...' : "S'inscrire"}
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full p-3 mt-4 rounded-md text-white ${loading ? 'bg-blue-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500'}`}
+          >
+            {loading ? 'Vérification...' : "S'inscrire"}
           </button>
         </form>
 
-        {message && <p className="message">{message}</p>}
-        
+        {message && <p className="text-sm text-blue-400 mt-4">{message}</p>}
+
         {popup && (
-          <div className={`popup ${popup.type}`}>
+          <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 p-4 rounded-md shadow-lg ${popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`}>
             <p>{popup.message}</p>
           </div>
         )}
 
-        <div className="connect-message">
-          <p>J'ai déjà un compte. <a href="/login">Connectez-vous</a></p>
+        <div className="text-sm text-gray-400 mt-6">
+          <p>J'ai déjà un compte. <a href="/login" className="text-green-500 hover:underline">Connectez-vous</a></p>
+        </div>
+        
+        {/* Lien vers les CGU */}
+        <div className="mt-4 text-center text-sm text-gray-400">
+          <p>
+            En vous inscrivant, vous acceptez nos <a href="/cgu" className="text-green-500 hover:underline">Conditions Générales d'Utilisation</a>.
+          </p>
         </div>
       </div>
-
-      <style jsx>{`
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-
-        html, body {
-          height: 100%;
-          width: 100%;
-          overflow-x: hidden;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background-color: #1e1e1e;
-        }
-
-        .container {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 100%;
-          height: 100vh;
-        }
-
-        .form-wrapper {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          width: 100%;
-          max-width: 400px;
-          padding: 20px;
-          background-color: #2b2b2b;
-          border-radius: 8px;
-          box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        h2 {
-          font-size: 24px;
-          margin-bottom: 20px;
-          color: #ffffff;
-        }
-
-        .form {
-          display: flex;
-          flex-direction: column;
-          width: 100%;
-        }
-
-        .styled-select {
-    background-color: #3c3c3c;
-    border: none;
-    border-radius: 5px;
-    padding: 12px;
-    margin: 8px 0;
-    color: #ffffff;
-    font-size: 16px;
-    appearance: none; /* Supprime l'apparence par défaut du navigateur */
-    cursor: pointer;
-  }
-
-  .styled-select::placeholder {
-    color: #b0b0b0;
-  }
-
-  .styled-select option {
-    background-color: #2b2b2b;
-    color: #ffffff;
-  }
-
-  .styled-select:focus {
-    outline: 2px solid #4caf50;
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-  }
-
-        .form input {
-          background-color: #3c3c3c;
-          border: none;
-          border-radius: 5px;
-          padding: 12px;
-          margin: 8px 0;
-          color: #ffffff;
-          font-size: 16px;
-        }
-
-        .form input::placeholder {
-          color: #b0b0b0;
-        }
-
-        .form button {
-          background-color: #4caf50;
-          color: #ffffff;
-          border: none;
-          border-radius: 5px;
-          padding: 12px;
-          font-size: 16px;
-          cursor: pointer;
-          margin-top: 10px;
-          transition: background-color 0.3s, transform 0.3s;
-        }
-
-        .form button:hover {
-          background-color: #357abd;
-        }
-
-        .form button.loading {
-          background-color: #005bb5;
-          cursor: not-allowed;
-          transform: scale(1.05);
-        }
-
-        .message {
-          margin-top: 20px;
-          font-size: 14px;
-          color: #4a90e2;
-        }
-
-        .popup {
-          position: fixed;
-          top: 20px;
-          left: 50%;
-          transform: translateX(-50%);
-          background-color: #28a745;
-          color: white;
-          padding: 10px;
-          border-radius: 5px;
-          box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-          z-index: 1000;
-        }
-
-        .popup.error {
-          background-color: #dc3545;
-        }
-
-        .connect-message {
-          margin-top: 20px;
-          font-size: 14px;
-          color: #b0b0b0;
-        }
-
-        .connect-message a {
-          color: #4caf50;
-          text-decoration: none;
-        }
-
-        .connect-message a:hover {
-          text-decoration: underline;
-        }
-      `}</style>
     </div>
   );
 }
