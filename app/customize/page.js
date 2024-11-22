@@ -162,7 +162,7 @@ export default function CustomizeReceipt() {
           <label style={styles.label}>Logo :</label>
           <input
             type="file"
-            accept=".jpeg"
+            accept=".jpeg,.png,.jpg"
             onChange={handleLogoUpload}
             style={styles.fileInput}
           />
