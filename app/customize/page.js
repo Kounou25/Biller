@@ -9,7 +9,7 @@ export default function CustomizeReceipt() {
   const [cmpTel, setCmpTel] = useState('');
   const [adresse, setAdresse] = useState('');
   const [slogan, setSlogan] = useState('');
-  const [color, setColor] = useState('');
+  let [color, setColor] = useState('');
   const [logo, setLogo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -44,6 +44,10 @@ export default function CustomizeReceipt() {
       return;
     }
 
+    if (color=='') {
+      color = '#690202'
+    }
+
     try {
       const { data: companyData, error: companyError } = await supabase
         .from('company')
@@ -62,7 +66,7 @@ export default function CustomizeReceipt() {
       if (companyError) throw companyError;
 
       const companyId = companyData[0].idcmp;
-
+        let logoUrl='';
       if (logo) {
         const { data: logoData, error: logoError } = await supabase
           .storage
@@ -71,8 +75,12 @@ export default function CustomizeReceipt() {
 
         if (logoError) throw logoError;
 
-        const logoUrl = logoData.path;
+        let logoUrl = logoData.path;
 
+       //verification si le champs logo est vide, on lui assigne l'url par defaut
+      }else if(!logo){
+        logoUrl = 'company-logos/default.jpg';
+      }
         const { error: logoInsertError } = await supabase
           .from('logos')
           .insert([
@@ -83,12 +91,20 @@ export default function CustomizeReceipt() {
           ]);
 
         if (logoInsertError) throw logoInsertError;
-      }
-
+      
       setMessage('Informations enregistrées avec succès !');
       setTimeout(() => router.push('/home'), 2000);
     } catch (error) {
-      setError('Erreur lors de l\'enregistrement des informations : ' + error.message);
+      //conditions pour avoir des messages d'erreurs clairs
+
+      if (error.message == 'duplicate key value violates unique constraint "company_cmptel_key"') {
+        const sms = 'ce numero est déja utiliser !'
+        setError("Erreur lors de l'enregistrement des informations :" + sms);
+        
+      }else{
+        setError("Erreur lors de l'enregistrement des informations " +error.message);
+      }
+
     } finally {
       setLoading(false);
     }
@@ -146,7 +162,7 @@ export default function CustomizeReceipt() {
           <label style={styles.label}>Logo :</label>
           <input
             type="file"
-            accept=".jpeg,.png"
+            accept=".jpeg"
             onChange={handleLogoUpload}
             style={styles.fileInput}
           />
