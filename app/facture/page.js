@@ -11,6 +11,10 @@ export default function Home() {
   const [popupMessage, setPopupMessage] = useState('');
   const [popupType, setPopupType] = useState(''); // 'success' ou 'error'
 
+  
+    // Obtenir la date actuelle
+    
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -27,7 +31,7 @@ export default function Home() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Tikita-pro recu ${customer}`;
+      a.download = `Tikita-pro recu ${customer}#${email}`;
       a.click();
 
       setPopupMessage('Reçu généré avec succès !');
