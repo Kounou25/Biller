@@ -14,8 +14,15 @@ async function loadImageAsBase64FromUrl(url) {
   return `data:image/png;base64,${base64}`;
 }
 
+async function loadImageAsBase64FromUrljpeg(url) {
+  const response = await axios.get(url, { responseType: 'arraybuffer' });
+  const base64 = Buffer.from(response.data, 'binary').toString('base64');
+  return `data:image/jpeg;base64,${base64}`;
+}
+
 export async function POST(req) {
   try {
+    
     const { customer, email, items,userId } = await req.json();
     const total = items.reduce((sum, item) => sum + Number(item.quantity) * Number(item.price), 0);
     const quantity = items.reduce((sum, item) => sum + Number(item.quantity), 0);
@@ -34,15 +41,12 @@ export async function POST(req) {
     const  {data:logoData,error:logoError} = await supabase 
     .from('logos')
     .select('*')
-    .eq('iduser', userId)
-    .single();
-
+    .eq('iduser', userId) .single();
     //requete pour recuperer les utilisateurs
     const {data : usersData, error: usersError} = await supabase
     .from('users') 
     .select('*') 
-    .eq('id', userId) 
-    .single();
+    .eq('id', userId);
 
     //requete pour recuperer les informations de la compagnie
 
@@ -55,25 +59,38 @@ export async function POST(req) {
 
     //insertion des donnees des factures dans la base de donnees
 
-    
+    console.log('donnes',logoData);
 
     if (logoError) throw logoError;
     const baseUrl="https://fcrrnizcdydzpbzdvcgc.supabase.co/storage/v1/object/public/logos/";
     const logoUrl =baseUrl+logoData.url;
     console.log("url :",logoUrl);
+    console.log('base url',logoData.url);
     console.log("data :",companyData);
 
 
     // Créer un nouveau document PDF avec une taille A5 (148mm x 210mm)
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
 
-    // Chemin absolu vers le logo
+    //Verification du format de l'image
+    if (logoData && logoData.url) {
+      if(logoData.url.includes('.jpg')){
+        console.log('format .jpeg detecter');
+        const logoBase64 = await loadImageAsBase64FromUrljpeg(logoUrl);
+        // Ajouter le logo en haut à droite
+        doc.addImage(logoBase64, 'jpeg', 80, 10, 65, 40);
+      } else if (logoData.url.includes('.png')) {
+        console.log('format .png detecter')
+        const logoBase64 = await loadImageAsBase64FromUrl(logoUrl);
+        doc.addImage(logoBase64, 'png', 80, 10, 65, 40);
+      }
+    } else {
+      console.error("Logo URL non trouvé ou données manquantes");
+      // Optionnel : Gestion d'erreur si l'URL du logo est manquante
+    }
 
     // Charger le logo en base64 depuis le disque
-    const logoBase64 = await loadImageAsBase64FromUrl(logoUrl);
-
-    // Ajouter le logo en haut à droite
-    doc.addImage(logoBase64, 'jpeg', 80, 10, 65, 40); // Ajuste la position et la taille du logo
+    // Ajuste la position et la taille du logo
 
     // Définir des styles
     doc.setFont("helvetica");
