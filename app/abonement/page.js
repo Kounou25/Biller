@@ -1,35 +1,33 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 export default function AbonnementForm() {
-  const [montant, setMontant] = useState('');
-  const [duree, setDuree] = useState('0'); // 0 pour 1 mois, 1 pour 12 mois
-  const [code, setCode] = useState('');
+  const [montant, setMontant] = useState("");
+  const [duree, setDuree] = useState("0"); // 0 pour 1 mois, 1 pour 12 mois
+  const [code, setCode] = useState("");
   const [abonnementActif, setAbonnementActif] = useState(null); // État pour l'abonnement actif
   const [loading, setLoading] = useState(false); // Indicateur de chargement
-  const [message, setMessage] = useState({ text: '', type: '' }); // Message de succès ou d'erreur
+  const [message, setMessage] = useState({ text: "", type: "" }); // Message de succès ou d'erreur
   const router = useRouter();
 
-  // Simuler la récupération d'un abonnement actif (normalement, cela viendrait d'une API)
   useEffect(() => {
     const abonnement = {
       montant: 5000,
       duree: 0,
-      code: 'CODE123',
+      code: "CODE123",
     };
     setAbonnementActif(abonnement);
   }, []);
 
-  // Mettre à jour la durée automatiquement selon le montant sélectionné
   useEffect(() => {
     if (montant === "5000") {
-      setDuree("0"); // 1 mois pour 5000
+      setDuree("0");
     } else if (montant === "39500") {
-      setDuree("1"); // 1 an pour 39500
+      setDuree("1");
     }
   }, [montant]);
 
@@ -37,7 +35,7 @@ export default function AbonnementForm() {
     e.preventDefault();
     setLoading(true);
 
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem("userId");
     const abonnementData = {
       montant: parseFloat(montant),
       duree: parseInt(duree),
@@ -46,194 +44,107 @@ export default function AbonnementForm() {
     };
 
     try {
-      const response = await fetch('/api/abonnement', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/abonnement", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(abonnementData),
       });
 
       if (response.ok) {
-        setMessage({ text: 'Abonnement créé avec succès!', type: 'success' });
-        setTimeout(() => router.push('/home'), 1500);
+        setMessage({ text: "Abonnement créé avec succès!", type: "success" });
+        setTimeout(() => router.push("/home"), 1500);
       } else {
-        setMessage({ text: 'Erreur lors de la création de l’abonnement.', type: 'error' });
+        setMessage({ text: "Erreur lors de la création de l’abonnement.", type: "error" });
       }
     } catch (error) {
-      setMessage({ text: 'Erreur lors de la communication avec le serveur.', type: 'error' });
+      setMessage({ text: "Erreur lors de la communication avec le serveur.", type: "error" });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.backButton} onClick={() => router.push('/home')}>
-        <FontAwesomeIcon icon={faArrowLeft} style={{ marginRight: '8px' }} />
+    <div className="flex flex-col items-center p-6 bg-gray-900 text-white rounded-md shadow-lg max-w-md mx-auto mt-16">
+      <div
+        className="flex items-center self-start text-green-400 text-sm cursor-pointer mb-6"
+        onClick={() => router.push("/home")}
+      >
+        <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
         Retour à l'accueil
       </div>
-      
-      <h2 style={styles.title}>Souscrire à un abonnement</h2>
-      
+
+      <h2 className="text-2xl font-bold mb-6">Souscrire à un abonnement</h2>
+
       {abonnementActif && (
-        <div style={styles.abonnementActif}>
-          <h3 style={styles.abonnementTitle}>Abonnement Actif</h3>
+        <div className="bg-green-800 border border-green-600 rounded-md p-4 mb-6 w-full">
+          <h3 className="text-lg font-semibold mb-2">Abonnement Actif</h3>
           <p>Montant: {abonnementActif.montant} CFA</p>
-          <p>Durée: {abonnementActif.duree === 0 ? '1 mois' : '1 an'}</p>
+          <p>Durée: {abonnementActif.duree === 0 ? "1 mois" : "1 an"}</p>
           <p>Code: {abonnementActif.code}</p>
         </div>
       )}
 
-      <div style={styles.formContainer}>
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <label style={styles.label}>
-            Montant :
-            <select
-              value={montant}
-              onChange={(e) => setMontant(e.target.value)}
-              required
-              style={styles.select}
-            >
-              <option value="">Sélectionner le montant</option>
-              <option value="5000">5000 CFA</option>
-              <option value="39500">39500 CFA</option>
-            </select>
-          </label>
+      <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+        <label className="text-sm font-semibold">
+          Montant :
+          <select
+            value={montant}
+            onChange={(e) => setMontant(e.target.value)}
+            required
+            className="w-full mt-2 p-2 rounded-md bg-gray-800 border border-gray-700 focus:ring focus:ring-green-400"
+          >
+            <option value="">Sélectionner le montant</option>
+            <option value="5000">5000 CFA</option>
+            <option value="39500">39500 CFA</option>
+          </select>
+        </label>
 
-          <label style={styles.label}>
-            Durée :
-            <select
-              value={duree}
-              onChange={(e) => setDuree(e.target.value)}
-              required
-              style={styles.select}
-            >
-              <option value="0">1 mois</option>
-              <option value="1">1 an</option>
-            </select>
-          </label>
+        <label className="text-sm font-semibold">
+          Durée :
+          <select
+            value={duree}
+            onChange={(e) => setDuree(e.target.value)}
+            required
+            className="w-full mt-2 p-2 rounded-md bg-gray-800 border border-gray-700 focus:ring focus:ring-green-400"
+          >
+            <option value="0">1 mois</option>
+            <option value="1">1 an</option>
+          </select>
+        </label>
 
-          <label style={styles.label}>
-            Code d'envoi :
-            <input
-              type="text"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              required
-              maxLength="35"
-              placeholder="Entrez votre code"
-              style={styles.input}
-            />
-          </label>
+        <label className="text-sm font-semibold">
+          Code d'envoi :
+          <input
+            type="text"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            required
+            maxLength="35"
+            placeholder="Entrez votre code"
+            className="w-full mt-2 p-2 rounded-md bg-gray-800 border border-gray-700 focus:ring focus:ring-green-400 placeholder-gray-500"
+          />
+        </label>
 
-          <button type="submit" style={styles.button} disabled={loading}>
-            {loading ? 'Souscription en cours...' : 'Souscrire'}
-          </button>
-        </form>
-      </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-2 rounded-md font-bold ${
+            loading ? "bg-gray-700" : "bg-green-500 hover:bg-green-600"
+          } text-white transition`}
+        >
+          {loading ? "Souscription en cours..." : "Souscrire"}
+        </button>
+      </form>
 
       {message.text && (
-        <div style={{ ...styles.popup, backgroundColor: message.type === 'success' ? '#28a745' : '#dc3545' }}>
-          <p style={styles.popupText}>{message.text}</p>
+        <div
+          className={`fixed top-4 left-1/2 transform -translate-x-1/2 p-3 rounded-md text-white text-sm font-bold ${
+            message.type === "success" ? "bg-green-600" : "bg-red-600"
+          }`}
+        >
+          {message.text}
         </div>
       )}
     </div>
   );
 }
-
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: '20px',
-    backgroundColor: '#f9f9f9',
-    borderRadius: '8px',
-    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-    maxWidth: '400px',
-    margin: 'auto',
-    marginTop: '50px',
-  },
-  backButton: {
-    display: 'flex',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    color: '#4caf50',
-    fontSize: '16px',
-    cursor: 'pointer',
-    marginBottom: '20px',
-  },
-  title: {
-    fontSize: '24px',
-    color: '#333',
-    marginBottom: '20px',
-  },
-  abonnementActif: {
-    backgroundColor: '#e9f7ef',
-    border: '1px solid #c3e6cb',
-    borderRadius: '5px',
-    padding: '10px',
-    marginBottom: '20px',
-    width: '100%',
-  },
-  abonnementTitle: {
-    fontSize: '18px',
-    color: '#155724',
-    marginBottom: '10px',
-  },
-  formContainer: {
-    width: '100%',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  label: {
-    marginBottom: '15px',
-    fontWeight: 'bold',
-    color: '#555',
-  },
-  input: {
-    width: '100%',
-    padding: '10px',
-    borderRadius: '5px',
-    border: '1px solid #ccc',
-    marginTop: '5px',
-    fontSize: '16px',
-  },
-  select: {
-    width: '100%',
-    padding: '10px',
-    borderRadius: '5px',
-    border: '1px solid #ccc',
-    marginTop: '5px',
-    fontSize: '16px',
-    backgroundColor: '#fff',
-    color: '#333',
-  },
-  button: {
-    padding: '12px',
-    backgroundColor: '#4caf50',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    marginTop: '20px',
-    transition: 'background-color 0.3s',
-  },
-  popup: {
-    position: 'fixed',
-    top: '20px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    padding: '15px',
-    borderRadius: '5px',
-    zIndex: 1000,
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  popupText: {
-    margin: 0,
-  },
-};
