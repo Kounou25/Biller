@@ -44,16 +44,17 @@ export default function Login() {
   };
 
   return (
-    <div className="container">
-      <div className="form-wrapper">
-        <h2>Connexion</h2>
-        <form onSubmit={handleLogin} className="form">
+    <div className="flex justify-center items-center min-h-screen bg-gray-950 p-4">
+      <div className="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-md text-white">
+        <h2 className="text-3xl text-center mb-6">Connexion</h2>
+        <form onSubmit={handleLogin} className="flex flex-col gap-4">
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="p-3 text-lg rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
           />
           <input
             type="password"
@@ -61,150 +62,33 @@ export default function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="p-3 text-lg rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
           />
-          <button type="submit" disabled={loading}>
-            {loading ? <div className="loader"></div> : 'Se connecter'}
+          <button
+            type="submit"
+            disabled={loading}
+            className="p-3 text-lg rounded-md bg-green-500 text-white hover:bg-green-400 disabled:bg-gray-500 transition-colors"
+          >
+            {loading ? (
+              <div className="border-4 border-white border-t-transparent rounded-full w-6 h-6 animate-spin mx-auto"></div>
+            ) : (
+              'Se connecter'
+            )}
           </button>
         </form>
-        {message && <p className="message">{message}</p>}
+        {message && <p className="mt-4 text-center text-red-500">{message}</p>}
 
-        {/* Ajout du lien pour la création d'un compte */}
-        <p className="signup-link">
-          Pas encore inscrit ? <a href="/register">Créer un compte</a>
+        {/* Lien pour créer un compte */}
+        <p className="text-center text-gray-400 mt-4">
+          Pas encore inscrit ? <a href="/register" className="text-green-500 hover:underline">Créer un compte</a>
         </p>
       </div>
 
       {popupVisible && (
-        <div className="popup">
-          <div className="popupContent">
-            <p>{popupMessage}</p>
-          </div>
+        <div className="absolute top-5 left-1/2 transform -translate-x-1/2 bg-green-600 text-white py-2 px-4 rounded-md shadow-lg animate-slideIn">
+          <p>{popupMessage}</p>
         </div>
       )}
-
-      <style jsx>{`
-        .container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 100vh;
-          background-color: #1e1e1e;
-          padding: 0 1rem;
-          box-sizing: border-box;
-        }
-        .form-wrapper {
-          background-color: #333;
-          padding: 2rem;
-          border-radius: 8px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-          width: 100%;
-          max-width: 400px;
-          color: #ffffff;
-        }
-        h2 {
-          text-align: center;
-          margin-bottom: 1.5rem;
-          font-size: 1.8rem;
-          color: #ffffff;
-        }
-        .form {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-        input {
-          padding: 0.8rem;
-          font-size: 1rem;
-          border: none;
-          border-radius: 4px;
-          background-color: #555;
-          color: #ffffff;
-        }
-        input::placeholder {
-          color: #cccccc;
-        }
-        button {
-          padding: 0.8rem;
-          font-size: 1rem;
-          border: none;
-          border-radius: 4px;
-          background-color: #4caf50;
-          color: #ffffff;
-          cursor: pointer;
-          transition: background-color 0.3s ease;
-        }
-        button:hover {
-          background-color: #45a049;
-        }
-        button:disabled {
-          background-color: #777;
-          cursor: not-allowed;
-        }
-        .message {
-          margin-top: 1rem;
-          text-align: center;
-          color: #ff4d4d;
-        }
-        .popup {
-          position: absolute;
-          top: 20px;
-          left: 50%;
-          transform: translateX(-50%);
-          background-color: #28a745; /* Changement pour un vert */
-          color: #fff;
-          padding: 10px 20px;
-          border-radius: 4px;
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-          animation: popup 0.3s ease-out;
-        }
-        .popupContent {
-          text-align: center;
-          font-size: 16px;
-        }
-        .loader {
-          border: 4px solid #fff;
-          border-top: 4px solid transparent;
-          border-radius: 50%;
-          width: 18px;
-          height: 18px;
-          animation: spin 1s linear infinite;
-        }
-
-        .signup-link {
-          text-align: center;
-          margin-top: 1rem;
-          color: #ccc;
-        }
-
-        .signup-link a {
-          color: #4caf50;
-          text-decoration: none;
-        }
-
-        .signup-link a:hover {
-          text-decoration: underline;
-        }
-
-        @keyframes popup {
-          from {
-            transform: translateX(-50%) translateY(-10px);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-          }
-        }
-
-        @keyframes spin {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   );
 }
