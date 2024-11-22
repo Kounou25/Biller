@@ -25,7 +25,7 @@ export default function CustomizeReceipt() {
 
   const handleLogoUpload = (event) => {
     const file = event.target.files[0];
-    if (file && file.type === "image/jpeg") {
+    if (file && file.type === "image/jpeg" || file.type === "image/png") {
       setLogo(file);
     } else {
       setError("Le format du fichier doit être .jpeg");
@@ -76,11 +76,7 @@ export default function CustomizeReceipt() {
         if (logoError) throw logoError;
 
         let logoUrl = logoData.path;
-
-       //verification si le champs logo est vide, on lui assigne l'url par defaut
-      }else if(!logo){
-        logoUrl = 'company-logos/default.jpg';
-      }
+        //insertion de l'image dans la base de donnee
         const { error: logoInsertError } = await supabase
           .from('logos')
           .insert([
@@ -91,7 +87,22 @@ export default function CustomizeReceipt() {
           ]);
 
         if (logoInsertError) throw logoInsertError;
+
+       //verification si le champs logo est vide, on lui assigne l'url par defaut
+      }else if(!logo){
+        logoUrl = 'company-logos/default.jpg';
       
+        const { error: logoInsertError } = await supabase
+          .from('logos')
+          .insert([
+            {
+              url: logoUrl,
+              iduser: parseInt(userId),
+            },
+          ]);
+
+        if (logoInsertError) throw logoInsertError;
+        }
       setMessage('Informations enregistrées avec succès !');
       setTimeout(() => router.push('/home'), 2000);
     } catch (error) {
