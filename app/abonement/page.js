@@ -24,12 +24,13 @@ export default function AbonnementForm() {
   }, []);
 
   useEffect(() => {
-    if (montant === "5000") {
-      setDuree("0");
-    } else if (montant === "39500") {
-      setDuree("1");
+    // Ajuster le montant en fonction de la durée
+    if (duree === "0") {
+      setMontant("5000");
+    } else if (duree === "1") {
+      setMontant("39500");
     }
-  }, [montant]);
+  }, [duree]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -86,20 +87,6 @@ export default function AbonnementForm() {
 
       <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
         <label className="text-sm font-semibold">
-          Montant :
-          <select
-            value={montant}
-            onChange={(e) => setMontant(e.target.value)}
-            required
-            className="w-full mt-2 p-2 rounded-md bg-gray-800 border border-gray-700 focus:ring focus:ring-green-400"
-          >
-            <option value="">Sélectionner le montant</option>
-            <option value="5000">5000 CFA</option>
-            <option value="39500">39500 CFA</option>
-          </select>
-        </label>
-
-        <label className="text-sm font-semibold">
           Durée :
           <select
             value={duree}
@@ -109,6 +96,19 @@ export default function AbonnementForm() {
           >
             <option value="0">1 mois</option>
             <option value="1">1 an</option>
+          </select>
+        </label>
+
+        <label className="text-sm font-semibold">
+          Montant :
+          <select
+            value={montant}
+            disabled
+            required
+            className="w-full mt-2 p-2 rounded-md bg-gray-800 border border-gray-700 text-gray-400 cursor-not-allowed"
+          >
+            <option value="5000">5000 CFA</option>
+            <option value="39500">39500 CFA</option>
           </select>
         </label>
 
