@@ -9,20 +9,22 @@ export default function AbonnementForm() {
   const [montant, setMontant] = useState("");
   const [duree, setDuree] = useState("0"); // 0 pour 1 mois, 1 pour 12 mois
   const [code, setCode] = useState("");
+  const [start, setStart] = useState("")
+  const [abonData, setAbonData] = useState('');
   const [abonnementActif, setAbonnementActif] = useState(null); // État pour l'abonnement actif
   const [loading, setLoading] = useState(false); // Indicateur de chargement
   const [message, setMessage] = useState({ text: "", type: "" }); // Message de succès ou d'erreur
   const router = useRouter();
 
-  useEffect(() => {
+  /*useEffect(() => {
     const abonnement = {
-      montant: 5000,
+      montant: abonData.idabo,
       duree: 0,
       code: "CODE123",
     };
     setAbonnementActif(abonnement);
   }, []);
-
+*/
   useEffect(() => {
     // Ajuster le montant en fonction de la durée
     if (duree === "0") {
@@ -31,6 +33,45 @@ export default function AbonnementForm() {
       setMontant("39500");
     }
   }, [duree]);
+
+useEffect(() => {
+  if (abonData && abonData.idabo ) {
+    setStart(abonData.created_at)
+
+    const abonnement = {
+      montant: abonData.montant,
+      duree: abonData.duree,
+      code:abonData.code ,
+      start : abonData.created_at,
+    };
+    setAbonnementActif(abonnement);
+
+  }
+}, [abonData]);
+
+  useEffect(() => {
+    const fetchAbonnement = async () => {
+      const userId = localStorage.getItem("userId");
+  
+      try {
+        const response = await fetch(`/api/getSubData?userId=${userId}`);
+        const result = await response.json();
+  
+        if (response.ok) {
+          setAbonData(result.data);
+
+        } else {
+          console.error("Erreur lors de la récupération des données:", result.error);
+        }
+      } catch (error) {
+        console.error("Erreur réseau:", error);
+      }
+    };
+
+    fetchAbonnement();
+  }, []);
+  
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,7 +104,6 @@ export default function AbonnementForm() {
       setLoading(false);
     }
   };
-
   return (
     <div className="flex flex-col items-center p-6 bg-gray-900 text-white rounded-md shadow-lg max-w-md mx-auto mt-16">
       <div
@@ -82,6 +122,7 @@ export default function AbonnementForm() {
           <p>Montant: {abonnementActif.montant} CFA</p>
           <p>Durée: {abonnementActif.duree === 0 ? "1 mois" : "1 an"}</p>
           <p>Code: {abonnementActif.code}</p>
+          <p>start: {abonnementActif.start}</p>
         </div>
       )}
 
