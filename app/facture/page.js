@@ -153,7 +153,7 @@ export default function Home() {
 
         <footer className="mt-6 text-center">
           <p>
-            <strong>TIKITA PRO 2.0</strong>
+            <strong>TIKITA PRO 2.2</strong>
           </p>
           <p>
             Créée avec ❤️ par{' '}
@@ -162,7 +162,7 @@ export default function Home() {
               target="_blank"
               className="text-blue-400 hover:text-blue-300 underline"
             >
-              Kounou Gilbert
+              Urban Agency
             </a>
           </p>
         </footer>

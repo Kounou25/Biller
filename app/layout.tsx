@@ -14,8 +14,11 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "TIKITA : Generateur de recu",
-  description: "Application de generation de recu ",
+  title: "TIKITA - Votre Générateur de Reçus Simplifié ",
+  description: "TIKITA, l'application incontournable pour créer des reçus personnalisés en toute simplicité. ",
+  icons: {
+    icon: '/favicon.ico', // ou '/favicon.png', selon le format
+  },
 };
 
 export default function RootLayout({
