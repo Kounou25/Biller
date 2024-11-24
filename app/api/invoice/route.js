@@ -56,10 +56,17 @@ export async function POST(req) {
     .eq('iduser', userId) 
     .single();  
 
+    const { count: nombreRecu, error: nombreError } = await supabase
+    .from("bills")
+    .select("*", { count: "exact" })
+    .eq("iduser", userId);
+  
+  if (nombreError) {
+    console.error("Erreur lors de la récupération du nombre de reçus :", nombreError.message);
+  } else {
+    console.log("Nombre de reçus générés :", nombreRecu);
+  }
 
-    //insertion des donnees des factures dans la base de donnees
-
-    console.log('donnes',logoData);
 
     if (logoError) throw logoError;
     const baseUrl="https://fcrrnizcdydzpbzdvcgc.supabase.co/storage/v1/object/public/logos/";
@@ -88,23 +95,21 @@ export async function POST(req) {
       console.error("Logo URL non trouvé ou données manquantes");
       // Optionnel : Gestion d'erreur si l'URL du logo est manquante
     }
-
-    // Charger le logo en base64 depuis le disque
-    // Ajuste la position et la taille du logo
-
-    // Définir des styles
+    //
+    const date = new Date().toLocaleDateString('fr-FR'); //recuperation de la date Format de date français    // Définir des styles
     doc.setFont("helvetica");
     doc.setFontSize(22);
     doc.setTextColor(`${companyData.color}`); // Couleur du titre
-    doc.text("Reçu", 15, 30);
+    doc.text("Reçu", 10, 24);
 
     // Informations sur le client
     doc.setFont("helvetica", "normal"); 
     doc.setFontSize(12);
     doc.setTextColor(0, 0, 0); // Couleur du texte
-    doc.text(`Reçu de: ${customer}`, 15, 45);
-    doc.text(`Numero de tel: ${email}`, 15, 52);
-
+    doc.text(`Reçu No:${date}#${nombreRecu}`, 10, 38);
+    doc.text(`Reçu de: ${customer}`, 10, 45);
+    doc.text(`Numero de tel: ${email}`, 10, 52);
+    
     // Dessiner une ligne de séparation
     doc.setDrawColor(`${companyData.color}`); // Couleur de la ligne
     doc.line(10, 58, 140, 58); // Ligne ajustée
@@ -140,8 +145,8 @@ export async function POST(req) {
       doc.setTextColor(0, 0, 0); // Couleur du texte pour les articles
       doc.text(description, 12, yPosition);
       doc.text(quantity.toString(), 60, yPosition);
-      doc.text(`${price.toFixed(2)} CFA`, 78, yPosition);
-      doc.text(`${itemTotal.toFixed(2)} CFA`, 110, yPosition); // Espacement ajusté
+      doc.text(`${price.toFixed(0)} CFA`, 78, yPosition);
+      doc.text(`${itemTotal.toFixed(0)} CFA`, 110, yPosition); // Espacement ajusté
     });
 
 
@@ -151,7 +156,7 @@ export async function POST(req) {
     const totalYPosition = tableStartY + rowHeight * (items.length + 2);
     doc.setFontSize(14);
     doc.setTextColor(`${companyData.color}`); // Couleur du total
-    doc.text(`Total: ${total.toFixed(2)} CFA`, 12, totalYPosition + 10);
+    doc.text(`Total: ${total.toFixed(0)} CFA`, 12, totalYPosition + 10);
 
     //Ajouter une ligne sous le total
     doc.setDrawColor(`${companyData.color}`);
@@ -164,7 +169,7 @@ export async function POST(req) {
     doc.text(`\n\n\n\n\n\n ${companyData.cmpName}\n ${companyData.slogan} \n ${companyData.adresse}\n ${companyData.cmpTel}`, 75, totalYPosition + 25, { align: "center" });
 
     // Ajouter la date et l'heure d'émission du reçu en bas à droite
-    const date = new Date().toLocaleDateString('fr-FR'); // Format de date français
+    
     const time = new Date().toLocaleTimeString('fr-FR', { timeZone: 'Africa/Niamey' }); // Heure au fuseau 'Africa/Niamey'
     doc.setFontSize(10);
     doc.setTextColor(0, 0, 0); // Couleur du texte
