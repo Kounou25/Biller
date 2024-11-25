@@ -18,6 +18,7 @@ import {
 export default function Dashboard() {
   const [userEmail, setUserEmail] = useState("");
   const [nombreData, setNombreData] = useState(0);
+  const [username, setUsername] = useState('');
   const [billingData, setBillingData] = useState([]);
   const [totalRecette, setTotalRecette] = useState(0);
   const [totalQuantity, setTotalQantity] = useState(0);
@@ -45,6 +46,14 @@ export default function Dashboard() {
         .order("created_at", { ascending: false }) // Tri par date, décroissant
         .limit(6);
 
+        const { data: UsrData, error: ErrorUsr } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", userId);
+
+        if (!ErrorUsr && UsrData) {
+          setUsername(UsrData[0]);
+        }
       const { data: recetteData, error: recetteError } = await supabase
         .rpc("get_total_recette", { user_id: userId });
 
@@ -121,7 +130,7 @@ export default function Dashboard() {
         {/* Main Content */}
         <div className="flex-1 p-8">
           <div className="mb-6">
-            <h1 className="text-4xl font-bold text-green-400">Bienvenue, {userEmail}!</h1>
+            <h1 className="text-4xl font-bold text-green-400">Bienvenue, {username.nom}!</h1>
             <p className="text-lg text-gray-400">Voici votre tableau de bord personnel</p>
           </div>
 
