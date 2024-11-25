@@ -55,7 +55,7 @@ export default function Home() {
           whileHover={{ scale: 1.1 }}
           onClick={handleSignUp}
         >
-          S'inscrire
+          Essayer Gratuitement
         </motion.button>
 
         <motion.button
