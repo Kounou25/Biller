@@ -1,3 +1,4 @@
+// Même import et loadImageAsBase64FromUrl que ton code actuel
 import { NextResponse } from 'next/server';
 import { supabase } from '../../../lib/supabaseClient';
 import { jsPDF } from 'jspdf';
@@ -5,9 +6,7 @@ import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 import { Buffer } from 'buffer';
-import { ifError } from 'assert';
 
-// Fonction pour convertir une image en base64 depuis le système de fichiers
 async function loadImageAsBase64FromUrl(url) {
   const response = await axios.get(url, { responseType: 'arraybuffer' });
   const base64 = Buffer.from(response.data, 'binary').toString('base64');
@@ -22,171 +21,169 @@ async function loadImageAsBase64FromUrljpeg(url) {
 
 export async function POST(req) {
   try {
-    
-    const { customer, email, items,userId } = await req.json();
+    const { customer, email, items, userId } = await req.json();
     const total = items.reduce((sum, item) => sum + Number(item.quantity) * Number(item.price), 0);
     const quantity = items.reduce((sum, item) => sum + Number(item.quantity), 0);
-    // Côté clienth
 
-     
-    const { data: billInsert,error: billError } = await supabase
-    .from('bills')
-    .insert([{ clientname: customer, clienttel:email,quantity:quantity, total, iduser:userId }]);
-  if (billError) {
-    console.error("Error inserting bill:", billError);
-    throw billError;
-  }
- 
-    //requette pour h recuperer le logo
-    const  {data:logoData,error:logoError} = await supabase 
-    .from('logos')
-    .select('*')
-    .eq('iduser', userId) .single();
-    //requete pour recuperer les utilisateurs
-    const {data : usersData, error: usersError} = await supabase
-    .from('users') 
-    .select('*') 
-    .eq('id', userId);
+    const { data: billInsert, error: billError } = await supabase
+      .from('bills')
+      .insert([{ clientname: customer, clienttel: email, quantity, total, iduser: userId }]);
+    if (billError) throw billError;
 
-    //requete pour recuperer les informations de la compagnie
+    const { data: logoData } = await supabase.from('logos').select('*').eq('iduser', userId).single();
+    const { data: usersData } = await supabase.from('users').select('*').eq('id', userId);
+    const { data: companyData } = await supabase.from('company').select('*').eq('iduser', userId).single();
+    const { count: nombreRecu } = await supabase
+      .from("bills").select("*", { count: "exact" }).eq("iduser", userId);
 
-    const {data :companyData, error:companyError} = await supabase
-    .from('company') 
-    .select('*') 
-    .eq('iduser', userId) 
-    .single();  
-
-    const { count: nombreRecu, error: nombreError } = await supabase
-    .from("bills")
-    .select("*", { count: "exact" })
-    .eq("iduser", userId);
-  
-  if (nombreError) {
-    console.error("Erreur lors de la récupération du nombre de reçus :", nombreError.message);
-  } else {
-    console.log("Nombre de reçus générés :", nombreRecu);
-  }
-
-
-    if (logoError) throw logoError;
-    const baseUrl="https://fcrrnizcdydzpbzdvcgc.supabase.co/storage/v1/object/public/logos/";
-    const logoUrl =baseUrl+logoData.url;
-    console.log("url :",logoUrl);
-    console.log('base url',logoData.url);
-    console.log("data :",companyData);
-
-
-    // Créer un nouveau document PDF avec une taille A5 (148mm x 210mm)
+    const logoUrl = "https://fcrrnizcdydzpbzdvcgc.supabase.co/storage/v1/object/public/logos/" + logoData.url;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
+    const pageWidth = doc.internal.pageSize.getWidth();
 
-    //Verification du format de l'image
+    // ----- LOGO PROPORTIONNEL -----
     if (logoData && logoData.url) {
-      if(logoData.url.includes('.jpg')){
-        console.log('format .jpeg detecter');
-        const logoBase64 = await loadImageAsBase64FromUrljpeg(logoUrl);
-        // Ajouter le logo en haut à droite
-        doc.addImage(logoBase64, 'jpeg', 80, 10, 65, 40);
-      } else if (logoData.url.includes('.png')) {
-        console.log('format .png detecter')
-        const logoBase64 = await loadImageAsBase64FromUrl(logoUrl);
-        doc.addImage(logoBase64, 'png', 80, 10, 65, 40);
+      const isJpeg = logoData.url.toLowerCase().includes('.jpg');
+      const logoBase64 = isJpeg
+        ? await loadImageAsBase64FromUrljpeg(logoUrl)
+        : await loadImageAsBase64FromUrl(logoUrl);
+      const format = isJpeg ? 'jpeg' : 'png';
+
+      const imgProps = doc.getImageProperties(logoBase64);
+      const maxWidth = 40;
+      const maxHeight = 20;
+      let width = maxWidth;
+      let height = (imgProps.height / imgProps.width) * maxWidth;
+
+      if (height > maxHeight) {
+        height = maxHeight;
+        width = (imgProps.width / imgProps.height) * maxHeight;
       }
-    } else {
-      console.error("Logo URL non trouvé ou données manquantes");
-      // Optionnel : Gestion d'erreur si l'URL du logo est manquante
+
+      const x = (pageWidth - width) / 2;
+      doc.addImage(logoBase64, format, x, 10, width, height);
     }
-    //
-    const date = new Date().toLocaleDateString('fr-FR'); //recuperation de la date Format de date français    // Définir des styles
-    doc.setFont("helvetica");
-    doc.setFontSize(22);
-    doc.setTextColor(`${companyData.color}`); // Couleur du titre
-    doc.text("Reçu", 10, 24);
 
-    // Informations sur le client
-    doc.setFont("helvetica", "normal"); 
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0); // Couleur du texte
-    doc.text(`Reçu No:${date}#${nombreRecu}`, 10, 38);
-    doc.text(`Reçu de: ${customer}`, 10, 45);
-    doc.text(`Numero de tel: ${email}`, 10, 52);
-    
-    // Dessiner une ligne de séparation
-    doc.setDrawColor(`${companyData.color}`); // Couleur de la ligne
-    doc.line(10, 58, 140, 58); // Ligne ajustée
+    const date = new Date().toLocaleDateString('fr-FR');
+    const time = new Date().toLocaleTimeString('fr-FR', { timeZone: 'Africa/Niamey' });
 
-    // Ajouter les en-têtes du tableau
-    const tableStartY = 65;
+    // ----- EN-TÊTE -----
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.setTextColor(companyData.color);
+    doc.text(companyData.cmpName, pageWidth / 2, 35, { align: 'center' });
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(50);
+    doc.text(companyData.adresse, pageWidth / 2, 41, { align: 'center' });
+    doc.text(`Tel: ${companyData.cmpTel}`, pageWidth / 2, 46, { align: 'center' });
+
+    // ----- TITRE REÇU -----
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.setTextColor(companyData.color);
+    doc.text("REÇU DE PAIEMENT", pageWidth / 2, 60, { align: "center" });
+
+    // ----- INFOS REÇU À GAUCHE & CLIENT À DROITE -----
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(0);
+
+    //-----formattage de la date
+
+    const rawDate = new Date();
+const day = String(rawDate.getDate()).padStart(2, '0');
+const month = String(rawDate.getMonth() + 1).padStart(2, '0'); // Mois de 0 à 11
+const year = String(rawDate.getFullYear()).slice(-4); // 2 derniers chiffres de l'année
+const formattedDate = `${day}${month}${year}`;
+
+
+doc.text(`Reçu No:TKT-000-${formattedDate}-0${nombreRecu}`, 10, 68);
+doc.text(`Date: ${date} ${time}`, 10, 74);
+doc.text(`Client: ${customer}`, pageWidth - 10, 68, { align: 'right' });
+doc.text(`Téléphone: ${email}`, pageWidth - 10, 74, { align: 'right' });
+
+
+
+    // ----- TABLEAU PRODUITS -----
+    const tableStartY = 85;
     const rowHeight = 8;
 
-    doc.setFontSize(10);
-    doc.setTextColor(255, 255, 255); // Couleur du texte
-    doc.setFillColor(`${companyData.color}`); // Couleur de fond pour les en-têtes
-    doc.rect(10, tableStartY, 130, rowHeight, 'F'); // Fond pour les en-têtes
+    const colX = {
+      desc: 10,
+      qte: 75,
+      prix: 95,
+      total: 115
+    };
 
-    // Ajuster les positions des colonnes
-    doc.text("Description", 12, tableStartY + 6); // Colonne Description
-    doc.text("Qty", 60, tableStartY + 6);        // Colonne Quantity (réduite)
-    doc.text("Price (CFA)", 78, tableStartY + 6); // Colonne Price
-    doc.text("Total (CFA)", 110, tableStartY + 6); // Colonne Total (avec plus d'espace)
+    const colWidth = {
+      desc: 60,
+      qte: 15,
+      prix: 20,
+      total: 25
+    };
 
-    // Dessiner une ligne sous les en-têtes
-    doc.setDrawColor(`${companyData.color}`);
-    doc.line(10, tableStartY + rowHeight, 140, tableStartY + rowHeight); // Ligne ajustée
+    // Header
+    doc.setFillColor(companyData.color);
+    doc.setDrawColor(230);
+    doc.rect(10, tableStartY, 130, rowHeight, 'F');
 
-    // Ajouter les articles oya baba danse
-    items.forEach((item, index) => {
-      const description = item.description || '';
-      const quantity = Number(item.quantity);
-      const price = Number(item.price);
-      const itemTotal = quantity * price;
+    doc.setTextColor(255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("Description", colX.desc + 2, tableStartY + 5);
+    doc.text("Qté", colX.qte + 2, tableStartY + 5);
+    doc.text("Prix", colX.prix + 2, tableStartY + 5);
+    doc.text("Total", colX.total + 2, tableStartY + 5);
 
-     
-      const yPosition = tableStartY + rowHeight * (index + 2);
-      doc.setTextColor(0, 0, 0); // Couleur du texte pour les articles
-      doc.text(description, 12, yPosition);
-      doc.text(quantity.toString(), 60, yPosition);
-      doc.text(`${price.toFixed(0)} CFA`, 78, yPosition);
-      doc.text(`${itemTotal.toFixed(0)} CFA`, 110, yPosition); // Espacement ajusté
+    // Rows
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(0);
+
+    items.forEach((item, i) => {
+      const y = tableStartY + rowHeight * (i + 1);
+      const itemTotal = Number(item.quantity) * Number(item.price);
+
+      if (i % 2 === 0) {
+        doc.setFillColor(245);
+        doc.rect(10, y, 130, rowHeight, 'F');
+      }
+
+      doc.text(item.description.substring(0, 40), colX.desc + 2, y + 5);
+      doc.text(String(item.quantity), colX.qte + 2, y + 5);
+      doc.text(`${Number(item.price).toFixed(0)} CFA`, colX.prix + 2, y + 5);
+      doc.text(`${itemTotal.toFixed(0)} CFA`, colX.total + 2, y + 5);
     });
 
+    // ----- TOTAL -----
+    const totalY = tableStartY + rowHeight * (items.length + 1) + 4;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(companyData.color);
+    doc.text(`\nMontant total: ${total.toFixed(0)} CFA`, pageWidth - 10, totalY, { align: "right" });
 
-    
-   
-    // Ajouter le total
-    const totalYPosition = tableStartY + rowHeight * (items.length + 2);
-    doc.setFontSize(14);
-    doc.setTextColor(`${companyData.color}`); // Couleur du total
-    doc.text(`Total: ${total.toFixed(0)} CFA`, 12, totalYPosition + 10);
+    // ----- FOOTER -----
+    doc.setDrawColor(180);
+    doc.line(10, totalY + 5, pageWidth - 10, totalY + 5);
 
-    //Ajouter une ligne sous le total
-    doc.setDrawColor(`${companyData.color}`);
-    doc.line(10, totalYPosition + 15, 140, totalYPosition + 15);
-
-    // Ajouter un message de remerciement centré en bas
-    doc.setFontSize(10);
     doc.setFont("helvetica", "italic");
-    doc.setTextColor(150, 150, 150); // Gris clair pour le message
-    doc.text(`\n\n\n\n\n\n ${companyData.cmpName}\n ${companyData.slogan} \n ${companyData.adresse}\n ${companyData.cmpTel}`, 75, totalYPosition + 25, { align: "center" });
+    doc.setFontSize(8);
+    doc.setTextColor(80);
+    doc.text("Merci pour votre confiance", pageWidth / 2, totalY + 12, { align: "center" });
+    doc.text(companyData.cmpName, pageWidth / 2, totalY + 17, { align: "center" });
+    doc.text(companyData.adresse, pageWidth / 2, totalY + 22, { align: "center" });
 
-    // Ajouter la date et l'heure d'émission du reçu en bas à droite
-    
-    const time = new Date().toLocaleTimeString('fr-FR', { timeZone: 'Africa/Niamey' }); // Heure au fuseau 'Africa/Niamey'
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0); // Couleur du texte
-    doc.text(`Date: ${date}`, 135, totalYPosition + 30, { align: "right" });
-    doc.text(`Heure: ${time}`, 135, totalYPosition + 35, { align: "right" });
-
-    // Récupérer les données du PDF sous forme de buffer
+    // ----- RÉPONSE -----
     const pdfData = doc.output('arraybuffer');
-
     return new NextResponse(Buffer.from(pdfData), {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename=invoice.pdf',
       },
     });
+
   } catch (error) {
-    console.error("Erreur lors de la génération du PDF :", error);
-    return new NextResponse('Erreur lors de la génération du PDF', { status: 500 });
+    console.error("Erreur PDF :", error);
+    return new NextResponse('Erreur PDF', { status: 500 });
   }
 }

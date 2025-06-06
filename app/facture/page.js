@@ -27,11 +27,19 @@ export default function Home() {
         body: JSON.stringify({ customer, email, items, userId }),
       });
 
+      const rawDate = new Date();
+const day = String(rawDate.getDate()).padStart(2, '0');
+const month = String(rawDate.getMonth() + 1).padStart(2, '0');
+const year = String(rawDate.getFullYear()).slice(-2); // 2 derniers chiffres
+const formattedDate = `${day}${month}${year}`;
+
+
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Tikita-pro recu ${customer}#${email}`;
+      a.download = `TKT-000-${formattedDate}-${customer}`;
       a.click();
 
       setPopupMessage('Reçu généré avec succès !');
